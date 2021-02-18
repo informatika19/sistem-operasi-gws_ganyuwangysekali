@@ -1,15 +1,36 @@
 #define bufsize 20
 
+#define VGA_MEMORY_BASE 0xA000
+#define VGA_WIDTH 320
+#define VGA_HEIGHT 200
+
+#define TEXT_MEMORY_BASE 0xB000
+#define TEXT_OFFSET 0x8000
+
 void printString(char *string);
 void readString(char *string);
 void clear(char *buffer, int length);
 
+extern unsigned char logo[];
+
 int main () {
 	char buffer[bufsize];
+	int x, y;
+	int width = logo[0];
+	int height = logo[1];
+	int startx = (VGA_WIDTH - width)/2;
+	int starty = (VGA_HEIGHT - height)/2;
 	// set graphics mode
-	interrupt(0x10, 0x0004, 0x0000, 0x0000, 0x0000);
-	// gambar :D
-	interrupt(0x10, 0x0C0E, 0x0000, 5, 5);
+	// http://www.oldlinux.org/Linux.old/docs/interrupts/int-html/rb-0069.htm
+	// 13h = VGA Graphics (320x200, 256 colors)
+	interrupt(0x10, 0x0013, 0x0000, 0x0000, 0x0000);
+	// render graphics
+	for(y = width; y > 0; y--){
+		for(x = width; x > 0; x--){
+			putInMemory(VGA_MEMORY_BASE, (y+starty) * VGA_WIDTH + (x+startx), logo[(y*width)+x]);
+		}
+	}
+
 	makeInterrupt21();
 	while(1){
 		clear(buffer, bufsize);
