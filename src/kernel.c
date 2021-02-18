@@ -61,7 +61,7 @@ void printString(char *string){
 	for(i = 0; i < bufsize; i++)
 	{
 		interrupt(0x10, 0x0200, 0x0000, 0x0000, 0x0000 + i);
-		interrupt(0x10, 0x0900, 0x000D, 0x0001);
+		interrupt(0x10, 0x0900, 0x000D, 0x0001, 0x0000);
 	}
 	for(i = 0; string[i] != 0; i++){
 		// set posisi kursor
