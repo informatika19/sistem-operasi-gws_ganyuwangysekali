@@ -3,6 +3,8 @@
 void printString(char *string);
 void readString(char *string);
 void clear(char *buffer, int length);
+int mod(int a, int m);
+int div(int a, int b);
 
 int main () {
 	char buffer[bufsize];
@@ -59,4 +61,30 @@ void clear(char* buffer, int length){
 	for(i = 0; i < length; i++){
 		buffer[i] = 0;
 	}
+}
+
+int mod(int a, int m)
+{
+	return a - (div(a, m) * m);
+}
+
+int div(int a, int b)
+{
+	int result = 0;
+	int i, A, B;
+	if (a < 0)
+	{
+		A = a;
+	}
+	if (b < 0)
+	{
+		B = b;
+	}
+	
+	for(i = B; i <= A; i += B)
+	{
+		result++;
+	}
+	
+	return result;
 }
