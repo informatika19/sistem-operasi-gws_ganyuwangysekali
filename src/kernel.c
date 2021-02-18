@@ -58,6 +58,11 @@ void printString(char *string){
 	int i = 0;
 	// set mode text 
 	interrupt(0x10, 0x0304, 0x0000, 0x0000, 0x0000);
+	for(i = 0; i < bufsize; i++)
+	{
+		interrupt(0x10, 0x0200, 0x0000, 0x0000, 0x0000 + i);
+		interrupt(0x10, 0x0900, 0x000D, 0x0001);
+	}
 	for(i = 0; string[i] != 0; i++){
 		// set posisi kursor
 		interrupt(0x10, 0x0200, 0x0000, 0x0000, 0x0000+i);

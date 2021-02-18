@@ -18,7 +18,7 @@ $(out):
 	mkdir $(out)
 
 $(boot_logo): $(boot_logo_in)
-	python $(TOOLS)/image2bin.py $< $@
+	python3 $(TOOLS)/image2bin.py $< $@
 
 $(sys_img): $(out) $(bootloader) $(kernel)
 	dd if=/dev/zero of=$@ bs=512 count=2880
