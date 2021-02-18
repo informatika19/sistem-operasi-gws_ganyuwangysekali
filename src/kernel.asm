@@ -9,6 +9,8 @@ global _interrupt
 global _makeInterrupt21
 extern _handleInterrupt21
 
+global _logo
+
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:
 	push bp
@@ -78,3 +80,5 @@ _interrupt21ServiceRoutine:
 	pop dx
 
 	iret
+
+_logo: incbin "logo.bin"

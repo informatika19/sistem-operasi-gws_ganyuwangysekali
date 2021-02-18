@@ -1,7 +1,9 @@
+TOOLS=tools
 BOCHS ?= bochs
 kernel_c=src/kernel.c
 kernel_asm=src/kernel.asm
 bootloader_asm=src/bootloader.asm
+boot_logo_in=src/boot_logo
 
 out=out
 
@@ -10,9 +12,13 @@ bootloader=$(out)/bootloader
 kernel_o=$(out)/kernel.o
 kernel_asm_o=$(out)/kernel_asm.o
 kernel=$(out)/kernel
+boot_logo=$(out)/logo.bin
 
 $(out):
 	mkdir $(out)
+
+$(boot_logo): $(boot_logo_in)
+	python $(TOOLS)/image2bin.py $< $@
 
 $(sys_img): $(out) $(bootloader) $(kernel)
 	dd if=/dev/zero of=$@ bs=512 count=2880
@@ -25,8 +31,8 @@ $(bootloader): $(bootloader_asm)
 $(kernel_o): $(kernel_c) $(out)
 	bcc -ansi -c -o $@ $<
 
-$(kernel_asm_o): $(kernel_asm) $(out)
-	nasm -f as86 $< -o $@
+$(kernel_asm_o): $(kernel_asm) $(out) $(boot_logo)
+	nasm -f as86 $< -o $@ -I $(out)
 
 $(kernel): $(kernel_o) $(kernel_asm_o)
 	ld86 -o $@ -d $^
