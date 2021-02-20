@@ -5,7 +5,7 @@ kernel_asm=src/kernel.asm
 bootloader_asm=src/bootloader.asm
 boot_logo_in=src/boot_logo
 
-out=out
+out=out/
 
 sys_img=$(out)/system.img
 bootloader=$(out)/bootloader
@@ -32,7 +32,7 @@ $(kernel_o): $(kernel_c) $(out)
 	bcc -ansi -c -o $@ $<
 
 $(kernel_asm_o): $(kernel_asm) $(out) $(boot_logo)
-	nasm -f as86 $< -o $@ -I $(out)
+	nasm -i $(out) -f as86 $< -o $@
 
 $(kernel): $(kernel_o) $(kernel_asm_o)
 	ld86 -o $@ -d $^
