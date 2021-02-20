@@ -97,14 +97,14 @@ int mod(int a, int m)
 int div(int a, int b)
 {
 	int result = 0;
-	int i, A, B;
+	int i, A = a, B = b;
 	if (a < 0)
 	{
-		A = a;
+		A = -a;
 	}
 	if (b < 0)
 	{
-		B = b;
+		B = -b;
 	}
 	
 	for(i = B; i <= A; i += B)
