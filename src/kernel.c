@@ -114,3 +114,12 @@ int div(int a, int b)
 	
 	return result;
 }
+
+int strlen(char *str) {
+	int count = 0;
+	while (*str != '\0') {
+		count++;
+		str++;
+	}
+	return count;
+}
