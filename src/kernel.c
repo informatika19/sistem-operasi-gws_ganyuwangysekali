@@ -98,12 +98,17 @@ int div(int a, int b)
 {
 	int result = 0;
 	int i, A = a, B = b;
+	char modifier = 1;
+	if(b == 0) return result;
+	
 	if (a < 0)
 	{
+		modifier = -modifier;
 		A = -a;
 	}
 	if (b < 0)
 	{
+		modifier = -modifier;
 		B = -b;
 	}
 	
@@ -111,8 +116,7 @@ int div(int a, int b)
 	{
 		result++;
 	}
-	
-	return result;
+	return result * modifier;
 }
 
 int strlen(char *str) {
