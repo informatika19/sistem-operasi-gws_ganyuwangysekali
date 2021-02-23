@@ -2,3 +2,4 @@
 
 ## Milestone 1: Interrupt
 [spek](https://s.id/spesifikasi-os19)
+[milestone](MILESTONE1.md)
