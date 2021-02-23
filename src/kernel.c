@@ -1,4 +1,5 @@
 #define bufsize 20
+#define textSize 1000
 
 #define VGA_MEMORY_BASE 0xA000
 #define VGA_WIDTH 320
@@ -9,6 +10,7 @@
 
 void printString(char *string);
 void readString(char *string);
+void clearScreen();
 void clear(char *buffer, int length);
 int mod(int a, int m);
 int div(int a, int b);
@@ -20,8 +22,8 @@ int main () {
 	int x, y;
 	int width = logo[0];
 	int height = logo[1];
-	int startx = (VGA_WIDTH - width)/2;
-	int starty = (VGA_HEIGHT - height)/2;
+	int startx = (VGA_WIDTH - width)>>1;
+	int starty = (VGA_HEIGHT - height)>>1;
 	// set graphics mode
 	// http://www.oldlinux.org/Linux.old/docs/interrupts/int-html/rb-0069.htm
 	// 13h = VGA Graphics (320x200, 256 colors)
@@ -57,12 +59,8 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 void printString(char *string){
 	int i = 0;
 	// set mode text 
-	interrupt(0x10, 0x0304, 0x0000, 0x0000, 0x0000);
-	for(i = 0; i < bufsize; i++)
-	{
-		interrupt(0x10, 0x0200, 0x0000, 0x0000, 0x0000 + i);
-		interrupt(0x10, 0x0900, 0x000D, 0x0001, 0x0000);
-	}
+	interrupt(0x10, 0x0303, 0x0000, 0x0000, 0x0000);
+	clearScreen();
 	for(i = 0; string[i] != 0; i++){
 		// set posisi kursor
 		interrupt(0x10, 0x0200, 0x0000, 0x0000, 0x0000+i);
@@ -86,6 +84,15 @@ void clear(char* buffer, int length){
 	int i;
 	for(i = 0; i < length; i++){
 		buffer[i] = 0;
+	}
+}
+
+void clearScreen(){
+	int x, y;
+	for(x = VGA_WIDTH; x >= 0; x--){
+		for(y = VGA_HEIGHT; y >= 0; y--){
+			putInMemory(VGA_MEMORY_BASE, VGA_WIDTH*y + x, 0);
+		}
 	}
 }
 
