@@ -14,6 +14,11 @@ void clearScreen();
 void clear(char *buffer, int length);
 int mod(int a, int m);
 int div(int a, int b);
+int strlen(char *str);
+void readSector(char *buffer, int sector);
+void writeSector(char *buffer, int sector);
+void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
+void readFile(char *buffer, char *path, int *result, char parentIndex);
 
 extern unsigned char logo[];
 
@@ -44,12 +49,28 @@ int main () {
 }
 
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
-	switch(AX){
-		case 0x0:
+	char AL, AH;
+	AL = (char) (AX);
+	AH = (char) (AX >> 0);
+	switch(AL)
+	{	
+		case 0x00:
 			printString(BX);
 			break;
-		case 0x1:
+		case 0x01:
 			readString(BX);
+			break;
+		case 0x02:
+			readSector(BX, CX);
+			break;
+		case 0x03:
+			writeSector(BX, CX);
+			break;
+		case 0x04:
+			readFile(BX, CX, DX, AH);
+			break;
+		case 0x05:
+			writeFile(BX, CX, DX, AH);
 			break;
 		default:
 			printString("invalid interrupt");
@@ -133,4 +154,14 @@ int strlen(char *str) {
 		str++;
 	}
 	return count;
+}
+
+void readSector(char *buffer, int sector)
+{
+	interrupt(0x13, 0x201, buffer, div(sector, 36) * 0x100 + mod(sector, 18) + 1, mod(div(sector, 18), 2) * 0x100);
+}
+
+void writeSector(char *buffer, int sector)
+{
+	interrupt(0x03, 0x301, buffer, div(sector, 36) * 0x100 + mod(sector, 18) + 1, mod(div(sector, 18), 2) * 0x100);
 }
