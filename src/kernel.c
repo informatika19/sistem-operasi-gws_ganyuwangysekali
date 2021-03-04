@@ -1,3 +1,8 @@
+#include "cd.c"
+#include "ls.c"
+#include "cat.c"
+#include "ln.c"
+
 #define bufsize 20
 #define textSize 1000
 
