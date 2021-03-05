@@ -3,8 +3,6 @@
 #include "cat.c"
 #include "ln.c"
 #include "STRING.H"
-#include<dirent.h>
-#include<unistd.h>
 
 #define bufsize 20
 #define textSize 1000

@@ -1,2 +1,2 @@
 void cat();
-// bisa direvisi, cuman biar ada isinya
+// readFile, printString, writeFile
