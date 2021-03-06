@@ -25,7 +25,7 @@ kernel_asm_o=$(out)/kernel_asm.o
 kernel=$(out)/kernel
 boot_logo=$(out)/logo.bin
 
-_IMPL=math string
+_IMPL=math string parse
 IMPL=$(patsubst %, $(out)/impl_%.o, $(_IMPL))
 _PROGS=cat cd ln ls
 PROGS=$(patsubst %, $(out)/prog_%.o, $(_PROGS))

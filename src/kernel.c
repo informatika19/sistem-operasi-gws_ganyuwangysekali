@@ -1,6 +1,6 @@
 #include "stds.h"
 #include "progs.h"
-#include "STRING.H"
+#include "string.h"
 #include "kernel.h"
 
 
@@ -35,7 +35,7 @@ int main () {
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 	char AL, AH;
 	AL = (char) (AX);
-	AH = (char) (AX >> 0);
+	AH = (char) (AX >> 8);
 	switch(AL)
 	{	
 		case 0x00:
