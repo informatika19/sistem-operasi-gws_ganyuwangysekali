@@ -12,6 +12,12 @@ out=out
 incl=$(SRC)/headers/
 INCL_FLAG=-I$(incl)
 
+KSIZE=50
+
+map_img=$(out)/map.img
+files_img=$(out)/files.img
+sectors_img=$(out)/sectors.img
+
 sys_img=$(out)/system.img
 bootloader=$(out)/bootloader
 kernel_o=$(out)/kernel.o
@@ -36,10 +42,24 @@ $(out):
 $(boot_logo): $(boot_logo_in)
 	python3 $(TOOLS)/image2bin.py $< $@
 
-$(sys_img): $(out) $(bootloader) $(kernel)
+$(map_img):
+	dd if=/dev/zero of=$@ bs=512 count=1
+	# isi KSIZE sektor pertama dengan 0xFF, karena kernel sudah mengisi fs
+	python -c 'print("\xFF"*$(KSIZE))' | dd of=$@ bs=512 count=$(KSIZE) conv=notrunc
+
+$(sectors_img):
+	dd if=/dev/zero of=$@ bs=512 count=1
+
+$(files_img):
+	dd if=/dev/zero of=$@ bs=512 count=2
+
+$(sys_img): $(out) $(bootloader) $(kernel) $(map_img) $(sectors_img) $(files_img)
 	dd if=/dev/zero of=$@ bs=512 count=2880
 	dd if=$(bootloader) of=$@ bs=512 conv=notrunc count=1
 	dd if=$(kernel) of=$@ bs=512 conv=notrunc seek=1
+	dd if=$(map_img) of=$@ bs=512 count=1 seek=256
+	dd if=$(files_img) of=$@ bs=512 count=2 seek=257
+	dd if=$(sectors_img) of=$@ bs=512 count=1 seek=259
 
 $(bootloader): $(bootloader_asm)
 	nasm $< -o $@
