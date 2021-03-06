@@ -1,29 +1,8 @@
-#include "cd.c"
-#include "ls.c"
-#include "cat.c"
-#include "ln.c"
+#include "stds.h"
+#include "progs.h"
 #include "STRING.H"
+#include "kernel.h"
 
-#define bufsize 20
-#define textSize 1000
-
-#define VGA_MEMORY_BASE 0xA000
-#define VGA_WIDTH 320
-#define VGA_HEIGHT 200
-
-#define TEXT_MEMORY_BASE 0xB000
-#define TEXT_OFFSET 0x8000
-
-void printString(char *string);
-void readString(char *string);
-void clearScreen();
-void clear(char *buffer, int length);
-int mod(int a, int m);
-int div(int a, int b);
-void readSector(char *buffer, int sector);
-void writeSector(char *buffer, int sector);
-void writeFile(char *buffer, char *path, int *sectors, char parentIndex);
-void readFile(char *buffer, char *path, int *result, char parentIndex);
 
 extern unsigned char logo[];
 
@@ -122,101 +101,7 @@ void clearScreen(){
 	}
 }
 
-/*** IMPLEMENTASI DIV DAN MOD ***/
-int mod(int a, int m)
-{
-	return a - (div(a, m) * m);
-}
 
-int div(int a, int b)
-{
-	int result = 0;
-	int i, A = a, B = b;
-	char modifier = 1;
-	if(b == 0) return result;
-	
-	if (a < 0)
-	{
-		modifier = -modifier;
-		A = -a;
-	}
-	if (b < 0)
-	{
-		modifier = -modifier;
-		B = -b;
-	}
-	
-	for(i = B; i <= A; i += B)
-	{
-		result++;
-	}
-	return result * modifier;
-}
-/*** IMPLEMENTASI DIV DAN MOD ***/
-
-/*** IMPLEMENTASI STRING.H ***/
-// kalau memungkinkan, pindahin ke STRING.C aja nanti //
-int strlen(char *str) {
-	int count = 0;
-	while (*str != '\0') {
-		count++;
-		str++;
-	}
-	return count;
-}
-
-char strcmp(char *str1, char *str2)
-{
-	while(*str1 != '\0' && *str2 != '\0')
-	{
-		if(*str1 == *str2)
-		{
-			str1++;
-			str2++;
-		}
-		else
-		{
-			return 1;
-		}
-	}
-	
-	if(*str1 == *str2) return 0;
-	return 1;
-}
-
-char *strchr(const char *s, int c)
-{
-	while (*s != (char) c && *s != '\0')
-	{
-		s++;
-	}
-	
-	return (*s == (char) c) ? s : NULL;
-}
-
-char *strcpy(char* s1, const char *s2)
-{
-	*s1 = *s2;
-	while(*s1 != '\0')
-	{
-		s1++;
-		s2++;
-		*s1 = *s2;
-	}
-	return s1;
-}
-
-char *strcat(char *s1, const char *s2)
-{
-	char* s = s1;
-	while(*s != '\0')
-	{
-		s++;
-	}
-	strcpy(s, s2);
-	return s1;
-}
-/*** IMPLEMENTASI STRING.H ***/
 
 void readSector(char *buffer, int sector)
 {
