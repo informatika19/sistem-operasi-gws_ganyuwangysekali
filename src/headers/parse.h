@@ -3,7 +3,8 @@
 
 #include "string.h"
 
-#define DELIMITER (char*)" "
+#define SPACE (char*)' '
+#define SLASH (char*)'/'
 
 char **parse(char *s, char *delim);
 // tolong revisi kalau perlu

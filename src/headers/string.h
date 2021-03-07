@@ -3,8 +3,8 @@
 
 int strlen(char *str);
 char strcmp(char *str1, char *str2);
-char *strchr(const char *s, int c);
-char *strcpy(char *s1, const char *s2);
-char *strcat(char *s1, const char *s2);
+char *strchr(const char *s, char c);
+char *strcpy(char *s1, const char *s2, int size);
+char *strcat(char *s1, const char *s2, int size);
 
 #endif

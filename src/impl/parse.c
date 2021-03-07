@@ -12,7 +12,7 @@ char **parse(char *s, char *delim)
 			s++;
 		}
 		tmpS = s;
-		space = strchr(s, (int)' ');
+		space = strchr(s, *delim);
 		while(tmpS != space)
 		{
 			// masukin jadi result[i]
@@ -20,6 +20,7 @@ char **parse(char *s, char *delim)
 			(result[numOfCommand])++;
 			tmpS++;
 		}
+		numOfCommand++;
 		*s = tmpS;
 	}
 	return result;
