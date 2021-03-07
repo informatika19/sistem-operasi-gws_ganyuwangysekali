@@ -1,8 +1,9 @@
 char **parse(char *s, char *delim)
 {
-	char **result;
+	char *result[255];
 	char *space;
 	char *tmpS;
+	int numOfCommand = 0;
 	while(*s != '\0')
 	{
 		// ignore blank
@@ -15,6 +16,8 @@ char **parse(char *s, char *delim)
 		while(tmpS != space)
 		{
 			// masukin jadi result[i]
+			*(result[numOfCommand]) = tmpS;
+			(result[numOfCommand])++;
 			tmpS++;
 		}
 		*s = tmpS;
