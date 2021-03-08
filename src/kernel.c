@@ -3,10 +3,10 @@
 #include "string.h"
 #include "kernel.h"
 
-
 extern unsigned char logo[];
 
-int main () {
+int main ()
+{
 	char buffer[bufsize];
 	int x, y;
 	int width = logo[0];

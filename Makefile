@@ -27,7 +27,7 @@ boot_logo=$(out)/logo.bin
 
 _IMPL=math string parse
 IMPL=$(patsubst %, $(out)/impl_%.o, $(_IMPL))
-_PROGS=cat cd ln ls
+_PROGS=cat cd ln ls getcwd
 PROGS=$(patsubst %, $(out)/prog_%.o, $(_PROGS))
 
 $(out)/impl_%.o: $(SRC)/impl/%.c

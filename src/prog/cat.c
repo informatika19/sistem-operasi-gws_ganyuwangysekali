@@ -2,33 +2,47 @@
 
 void cat(const char *fileName)
 {
-	/*
-	char *buf;
-	int sector = fileName--;
-	
+	char* content;
 	int result;
-	readFile(buf, fileName, &result, fileName - 2);
+	char* dummy;
+	/*
+	
+	// apakah readFile memitigasi fileName yang ada directory?
+	readFile(content, fileName, &result, sector[511]);
+	
+	if (result != -1)
+	{
+		printString(content);
+		return;
+	}	
+	*/
+	
+	/* ALTERNATIF LAIN */
+	/* CD berulang, lalu readFile yang bersangkutan */
+	char *args[255] = parse(fileName, SLASH);
+	int i = 0, j;
+	while(args[i + 1] != NULL)
+	{
+		result = chdir(args[i]);
+		if (result == 1) // error
+		{
+			return;
+		}
+		i++;
+	}
+	readFile(content, args[i], &result, sector[511]);
 	
 	if (result == -1)
 	{
-		// error code?
+		// error
 		return;
-	}
-	
-	printString(buf);
-	return;
-	*/
+	}	
+	printString(content)
 }
 
 int main(int argc, char *argv[])
 {
-	char *args[255] = parse(argv[1], SLASH);
 	char curDirIdx = sector[511];
-	
-	// cari file yang dimaksud pake cd berulang :v
-	// lalu baca isinya pakai readFile
-	// lalu printString kalau gak error
-	
-	// reset cwd
-	sector[511] = curDirIdx;
+	cat(argv[1]);
+	sector[511] = curDirIdx; // reset cwd
 }

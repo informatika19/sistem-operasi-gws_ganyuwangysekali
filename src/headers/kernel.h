@@ -11,6 +11,10 @@
 #define TEXT_MEMORY_BASE 0xB000
 #define TEXT_OFFSET 0x8000
 
+char map[512];
+char files[1024];
+char sector[512];
+
 void printString(char *string);
 void readString(char *string);
 void clearScreen();
