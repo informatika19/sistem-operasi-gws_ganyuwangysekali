@@ -1,14 +1,12 @@
 #include "../headers/progs.h"
 
-// kemungkinan besar alternatif 2
-int main(int argc, char *argv[])
+void ls(char *content)
 {
-	int i;
-	char *currentDirectory;
-	getcwd(currentDirectory);
-	char *content;
+	char *cwd;
+	getcwd(cwd);
 	
-	if(currentDirectory == NULL) // root
+	// bisa diganti langsung dengan sector[511] == 0xFF
+	if(cwd == NULL) // root
 	{
 		for(i = 0; i <= 63; i++)
 		{
@@ -24,13 +22,21 @@ int main(int argc, char *argv[])
 		for(i = 0; i <= 63; i++)
 		{
 			// parent dari isifile = direktori sekarang
-			if (files[16 * i] == *currentDirectory)
+			// *cwd juga bisa digantiin lgsg dengan sector[511]
+			if (files[16 * i] == *cwd)
 			{
 				strcat(content, &files[(16 * i) + 2], 14);
 				strcat(content, "\n", 1);
 			}
 		}
 	}
-	
+	strcat(content, "\0", 1);
+}
+
+int main(int argc, char *argv[])
+{
+	int i;
+	char *content;
+	ls(content);
 	printString(content);
 }
