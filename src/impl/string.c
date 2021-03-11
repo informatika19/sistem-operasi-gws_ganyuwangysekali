@@ -29,6 +29,20 @@ char strcmp(char *str1, char *str2)
 	return 1;
 }
 
+char strncmp(char *str1, char *str2, int n){
+	while(*str1 != 0 && *str2 != 0 && n > 0){
+		if(*str1 == *str2){
+			str1++;
+			str2++;
+			n--;
+		}
+		else return 1;
+	}
+
+	if(n <= 0 || *str1 == *str2) return 0;
+	return 1;
+}
+
 char *strchr(char *s, int c)
 {
 	while (*s != (char) c && *s != '\0')
@@ -39,7 +53,7 @@ char *strchr(char *s, int c)
 	return (*s == (char) c) ? s : NULL;
 }
 
-char *strcpy(char* s1, char *s2)
+void strcpy(char* s1, char *s2)
 {
 	*s1 = *s2;
 	while(*s1 != '\0')
@@ -48,7 +62,17 @@ char *strcpy(char* s1, char *s2)
 		s2++;
 		*s1 = *s2;
 	}
-	return s1;
+	return;
+}
+
+void strncpy(char *s1, char *s2, int n){
+	*s1 = *s2;
+	while(*s1 != 0 && n > 0){
+		s1++;
+		s2++;
+		n--;
+		*s1 = *s2;
+	}
 }
 
 char *strcat(char *s1, char *s2)
