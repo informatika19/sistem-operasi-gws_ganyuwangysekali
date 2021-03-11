@@ -1,5 +1,6 @@
 #include "progs.h"
 
+/*
 char *getcwd(char *buf)
 {
 	int errno = interrupt(0x21, 0x4702, buf, 0x101, 0x0001);
@@ -16,13 +17,12 @@ char *getcwd(char *buf)
 		return NULL;
 	}
 	return buf;
-	/* KONDISI YANG DIHARAPKAN :
-	buf isinya adalah 1 dari sektor file */
+	// KONDISI YANG DIHARAPKAN :
+	// buf isinya adalah 1 dari sektor file
 }
+*/
 
-/* KEMUNGKINAN BESAR ALTERNATIF 2 */
 /* ubah byte terakhir sector menjadi parent dari cwd */
-/*
 char *getcwd(char *buf)
 {
 	int curDirIndex = sector[511];
@@ -34,4 +34,3 @@ char *getcwd(char *buf)
 	buf = files[16 * curDirIndex];
 	return buf;
 }
-*/

@@ -13,7 +13,12 @@
 
 void cat(const char *fileName); // cat
 int chdir(const char* path); // cd
-void ls(char* content);
-void ln();
+
 char *getcwd(char *buf);
+void ls(char* content);
+
+int isDirectory(const char* path, char curDirIdx);
+void ln(const char *linkedFileName, char *outputFileName);
+void softln(const char *linkedPath, char *outputFilePath);
+
 #endif
