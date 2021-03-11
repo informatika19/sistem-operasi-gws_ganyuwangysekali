@@ -1,4 +1,7 @@
 #include "progs.h"
+#include "parse.h"
+#include "stds.h"
+
 
 int chdir(const char* path)
 {

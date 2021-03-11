@@ -1,4 +1,5 @@
 #include "../headers/progs.h"
+#include "stds.h"
 
 void ls(char *content)
 {

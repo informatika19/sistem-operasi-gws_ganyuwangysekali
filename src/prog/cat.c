@@ -1,4 +1,6 @@
 #include "progs.h"
+#include "parse.h"
+#include "stds.h"
 
 void cat(const char *fileName)
 {

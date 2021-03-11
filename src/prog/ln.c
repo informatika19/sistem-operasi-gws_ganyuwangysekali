@@ -1,4 +1,7 @@
 #include "progs.h"
+#include "parse.h"
+#include "stds.h"
+
 
 // path singular relatif terhadap curDirIdx
 // path = .   
@@ -29,6 +32,8 @@ void ln(const char *linkedFileName, char *outputFileName)
 {
 	char* Dir;
 	char curDirIdx = sector[511];
+	char *content;
+	int result;
 	
 	char* inputPath[255] = parse(linkedPath, SLASH);
 	int i = 0;
@@ -47,6 +52,7 @@ void ln(const char *linkedFileName, char *outputFileName)
 	}
 	// pasti file
 	
+	// readFile(content, inputPath[i], &result, sector[511]);
 	getcwd(Dir);
 	char inputFileSector = *(Dir + 1);
 	char inputDirIdx = sector[511];
@@ -66,6 +72,7 @@ void ln(const char *linkedFileName, char *outputFileName)
 	char outputDirPar = *Dir;
 	
 	/* buat file baru */
+	// mungkin writeFile(content, outputPath[i], &result, sector[511]);
 	int j = 0;
 	while(files[j] != NULL)
 	{

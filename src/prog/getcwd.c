@@ -1,4 +1,5 @@
 #include "progs.h"
+#include "stds.h"
 
 /*
 char *getcwd(char *buf)
