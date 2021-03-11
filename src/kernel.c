@@ -1,6 +1,7 @@
 #include "stds.h"
 #include "progs.h"
-#include "STRING.H"
+#include "string.h"
+#include "buffer.h"
 #include "kernel.h"
 
 
@@ -8,6 +9,7 @@ extern unsigned char logo[];
 
 int main () {
 	char buffer[bufsize];
+	char sectorBuf[512]; // 1 sektor = 512 byte
 	int x, y;
 	int width = logo[0];
 	int height = logo[1];
@@ -25,6 +27,7 @@ int main () {
 	}
 
 	makeInterrupt21();
+
 	while(1){
 		clear(buffer, bufsize);
 		interrupt(0x21, 0x01, buffer, 0x0000, 0x0000);
@@ -64,7 +67,7 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 void printString(char *string){
 	int i = 0;
 	// set mode text 
-	interrupt(0x10, 0x0303, 0x0000, 0x0000, 0x0000);
+	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
 	clearScreen();
 	for(i = 0; string[i] != 0; i++){
 		// set posisi kursor
@@ -85,13 +88,6 @@ void readString(char *string){
 	string[length] = 0;
 }
 
-void clear(char* buffer, int length){
-	int i;
-	for(i = 0; i < length; i++){
-		buffer[i] = 0;
-	}
-}
-
 void clearScreen(){
 	int x, y;
 	for(x = VGA_WIDTH; x >= 0; x--){
@@ -99,16 +95,4 @@ void clearScreen(){
 			putInMemory(VGA_MEMORY_BASE, VGA_WIDTH*y + x, 0);
 		}
 	}
-}
-
-
-
-void readSector(char *buffer, int sector)
-{
-	interrupt(0x13, 0x201, buffer, div(sector, 36) * 0x100 + mod(sector, 18) + 1, mod(div(sector, 18), 2) * 0x100);
-}
-
-void writeSector(char *buffer, int sector)
-{
-	interrupt(0x03, 0x301, buffer, div(sector, 36) * 0x100 + mod(sector, 18) + 1, mod(div(sector, 18), 2) * 0x100);
 }
