@@ -4,10 +4,10 @@
 #include "buffer.h"
 #include "kernel.h"
 
-
 extern unsigned char logo[];
 
-int main () {
+int main ()
+{
 	char buffer[bufsize];
 	char sectorBuf[512]; // 1 sektor = 512 byte
 	int x, y;
@@ -38,7 +38,7 @@ int main () {
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 	char AL, AH;
 	AL = (char) (AX);
-	AH = (char) (AX >> 0);
+	AH = (char) (AX >> 8);
 	switch(AL)
 	{	
 		case 0x00:

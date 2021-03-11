@@ -1,12 +1,12 @@
 #ifndef __PARSE_H_
 #define __PARSE_H_
 
-#include "STRING.H"
-#include<unistd.h>
+#include "string.h"
 
-#define DELIMITER (char*)" "
+#define SPACE (char*)' '
+#define SLASH (char*)'/'
 
-char **parse(char *s);
+char **parse(char *s, char *delim);
 // tolong revisi kalau perlu
 
 #endif
