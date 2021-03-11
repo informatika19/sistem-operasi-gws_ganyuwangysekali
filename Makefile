@@ -25,15 +25,16 @@ kernel_asm_o=$(out)/kernel_asm.o
 kernel=$(out)/kernel
 boot_logo=$(out)/logo.bin
 
-_IMPL=math string
-IMPL=$(patsubst %, $(out)/impl_%.o, $(_IMPL))
-_PROGS=cat cd ln ls
-PROGS=$(patsubst %, $(out)/prog_%.o, $(_PROGS))
+IMPL_FOLDER=$(SRC)/impl
+PROGS_FOLDER=$(SRC)/prog
 
-$(out)/impl_%.o: $(SRC)/impl/%.c
+IMPL=$(patsubst $(IMPL_FOLDER)/%.c, $(out)/impl_%.o, $(wildcard $(IMPL_FOLDER)/*.c))
+PROGS=$(patsubst $(PROG_FOLDER)/%.c, $(out)/prog_%.o, $(wildcard $(PROG_FOLDER)/*.c))
+
+$(out)/impl_%.o: $(IMPL_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
-$(out)/prog_%.o: $(SRC)/prog/%.c
+$(out)/prog_%.o: $(PROG_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
 $(out):
