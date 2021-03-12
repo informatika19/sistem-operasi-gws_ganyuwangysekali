@@ -1,50 +1,29 @@
 #include "progs.h"
 #include "parse.h"
 #include "stds.h"
+#include "file.h"
 
-void cat(const char *fileName)
+void cat(char *path, char parentIndex)
 {
 	char* content;
-	int result;
-	char* dummy;
-	/*
+	int errno;
+	readFile(content, path, &errno, parentIndex);
 	
-	// apakah readFile memitigasi fileName yang ada directory?
-	readFile(content, fileName, &result, sector[511]);
-	
-	if (result != -1)
+	if(errno == 0)
 	{
 		printString(content);
-		return;
-	}	
-	*/
-	
-	/* ALTERNATIF LAIN */
-	/* CD berulang, lalu readFile yang bersangkutan */
-	char *args[255] = parse(fileName, SLASH);
-	int i = 0, j;
-	while(args[i + 1] != NULL)
-	{
-		result = chdir(args[i]);
-		if (result == 1) // error
-		{
-			return;
-		}
-		i++;
 	}
-	readFile(content, args[i], &result, sector[511]);
-	
-	if (result == -1)
+	else if(errno == -1) // file not found
 	{
-		// error
-		return;
-	}	
-	printString(content)
+		printString("No such file or directory");
+	}
+	else if(errno == -2)
+	{
+		printString("Is a directory");
+	}
 }
 
 int main(int argc, char *argv[])
 {
-	char curDirIdx = sector[511];
 	cat(argv[1]);
-	sector[511] = curDirIdx; // reset cwd
 }

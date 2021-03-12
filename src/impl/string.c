@@ -55,14 +55,14 @@ char *strchr(char *s, char c)
 
 void strcpy(char* s1, char *s2)
 {
-	int num = 0;
-	while(num < size && *s2 != '\0')
+	while(*s2 != '\0')
 	{
 		*s1 = *s2;
-		num++;
 		s1++;
 		s2++;
 	}
+	// s2 == '\0'
+	*s1 = '\0';
 	return;
 }
 
@@ -75,18 +75,17 @@ void strncpy(char *s1, char *s2, int n){
 		*s1 = *s2;
 	}
 	*s1 = '\0';
-	return s1;
+	return;
 }
 
-char *strcat(char *s1, char *s2, int size)
+char *strncat(char *s1, char *s2, int n)
 {
-	int num = 0;
 	char* s = s1;
 	while(*s != '\0')
 	{
 		s++;
 	}
-	strcpy(s, s2, size);
+	strncpy(s, s2, n);
 	return s1;
 }
 /*** IMPLEMENTASI STRING.H ***/
