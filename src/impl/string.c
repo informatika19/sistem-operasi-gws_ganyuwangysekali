@@ -56,7 +56,7 @@ char *strchr(char *s, char c)
 void strcpy(char* s1, char *s2)
 {
 	int num = 0;
-	while(num < size && *s2 != '\0')
+	while(*s2 != '\0')
 	{
 		*s1 = *s2;
 		num++;
@@ -75,7 +75,7 @@ void strncpy(char *s1, char *s2, int n){
 		*s1 = *s2;
 	}
 	*s1 = '\0';
-	return s1;
+	return;
 }
 
 char *strcat(char *s1, char *s2, int size)
