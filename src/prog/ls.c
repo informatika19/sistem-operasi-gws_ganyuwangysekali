@@ -3,12 +3,22 @@
 
 void ls(char *content, char parentIndex)
 {
+	char dir[1024];
+	readSector(dir, 0x101);
+	readSector(dir + 512, 0x102);
+	
+	if(dir[parentIndex << 4 + 1] > 0x20)
+	{
+		ls(content, dir[parentIndex << 4 + 1] - 0x20);
+		return;
+	}
+	
 	for(i = 0; i <= 0x3F; i++)
 	{
 		// parent dari isifile = direktori sekarang
-		if (files[16 * i] == parentIndex)
+		if (dir[16 * i] == parentIndex)
 		{
-			strncat(content, files + (i << 4) + 2, 14);
+			strncat(content, dir + (i << 4) + 2, 14);
 			strncat(content, "\n", 1);
 		}
 	}

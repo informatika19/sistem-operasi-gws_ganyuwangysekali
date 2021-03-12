@@ -21,6 +21,11 @@ void cat(char *path, char parentIndex)
 	{
 		printString("Is a directory");
 	}
+	else
+	{
+		printString(content);
+	}
+	return;
 }
 
 int main(int argc, char *argv[])

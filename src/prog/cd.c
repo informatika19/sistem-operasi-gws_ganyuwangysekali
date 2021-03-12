@@ -64,14 +64,21 @@ char chdir(char* path, int* result, char parentIndex)
 			*result = 3;
 			return parentIndex;
 		}
-
+		
+		char trueParentIndex = parentIndex;
+		while(dir[trueParentIndex << 4 + 1] > 0x1F)
+		{
+			trueParentIndex = dir[trueParentIndex << 4 + 1] - 0x20;
+		}
+		
+		// nama filenya valid, cari indeks yang bersangkutan
 		i = 0;
 		do
 		{ // compare the name with all names in dir
 			strncpy(currentName, dir + (i << 4) + 2, 14);
 			i++;
 		}
-		while(strcmp(currentName, traversingName) != 0 && dir[i << 4] != cwdIdx && i < 0x40);
+		while(strcmp(currentName, traversingName) != 0 && dir[i << 4] != trueParentIndex && i < 0x40);
 		
 		if(i == 0x40)
 		{

@@ -1,7 +1,7 @@
 #include "progs.h"
 #include "stds.h"
 
-char *getcwd(char *buf)
+void getcwd(char *buf)
 {
 	if (cwdIdx == 0xFF) // root
 	{
@@ -13,5 +13,4 @@ char *getcwd(char *buf)
 	readSector(dir + 512, 0x102);
 	
 	strncpy(buf, dir + (cwdIdx << 4), 16);
-	return buf;
 }
