@@ -11,6 +11,9 @@
 #define TEXT_MEMORY_BASE 0xB000
 #define TEXT_OFFSET 0x8000
 
+#define TEXT_WIDTH 80
+#define TEXT_HEIGHT 25
+
 // Milestone 1
 void printString(char *string);
 void readString(char *string);
