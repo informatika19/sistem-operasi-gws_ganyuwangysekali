@@ -15,7 +15,6 @@ void writeSector(char *buffer, int sector)
 void writeFile(char *buffer, char *path, int *sectors, char parentIndex){
 	char map[512], dir[1024], sect[512], filename[14], basepath[512], realParentIndex;
 	int i = 0, j, k;
-	char f[16];
 	unsigned char valid = 0;
 
   getFilename(path, filename);
@@ -25,7 +24,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex){
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
 	while(i < 0x40 && (dir[i << 4 + 1] == 0xFF || dir[i << 4 + 1] < 0x40)){
-		if(dir[i << 4] == realParentIndex && strncmp(f+2, filename, 14) != 0){
+		if(dir[i << 4] == realParentIndex && strncmp(dir+(i<<4)+2, filename, 14) != 0){
 			// file sudah ada :D
 			*sectors = -1;
 			return;
@@ -33,7 +32,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex){
 		if(i == parentIndex) valid = 1;
 		i++;
 	}
-	if(f > 0x3F){
+	if(i > 0x3F){
 		// tidak ada dir kosong
 		*sectors = -2;
 		return;
