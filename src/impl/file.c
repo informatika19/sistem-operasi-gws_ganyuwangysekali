@@ -23,7 +23,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex){
   
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
-	while(i < 0x40 && (dir[i << 4 + 1] == 0xFF || dir[i << 4 + 1] < 0x40)){
+	while(i < 0x40 && (dir[(i<<4) + 1] == 0xFF || dir[(i << 4) + 1] < 0x40)){
 		if(dir[i << 4] == realParentIndex && strncmp(dir+(i<<4)+2, filename, 14) != 0){
 			// file sudah ada :D
 			*sectors = -1;
@@ -65,13 +65,13 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex){
   }
 
   // clear buffer files
-  clear(dir+(4<<i), 16);
+  clear(dir+(i<<4), 16);
   // put parent index
-	dir[(4<<i)] = realParentIndex;
+	dir[(i<<4)] = realParentIndex;
   // put sector index
-	dir[(4<<i)+1] = k;
+	dir[(i<<4)+1] = k;
   // copy filename to buffer
-  strncpy(dir+(4<<i)+2, filename, 14);
+  strncpy(dir+(i<<4)+2, filename, 14);
   // write buffer to sector
 	j = 0;
   i = 0;
