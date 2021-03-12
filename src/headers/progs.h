@@ -1,24 +1,16 @@
 #ifndef _PROGS_H
 #define _PROGS_H
 
-/* inisialisasi SHELL */
-/*
-	readSector(map, 0x100);
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-	readSector(sector, 0x103);
-	sector[511] = 0xFF; //cwd
-	map[511] = 1;
-*/
+// pas shell dijalankan (which is pas ngeinclude filenya), diinisiasi root
+char cwdIdx = 0xFF;
 
-void cat(const char *fileName); // cat
-int chdir(const char* path); // cd
+void cat(char *path, char parentIndex); // cat
+char chdir(char* path, int* result, char parentIndex); // cd
 
 char *getcwd(char *buf);
-void ls(char* content);
+void ls(char *content, char parentIndex); // ls
 
-int isDirectory(const char* path, char curDirIdx);
-void ln(const char *linkedFileName, char *outputFileName);
-void softln(const char *linkedPath, char *outputFilePath);
+void ln(char *path, char *outputPath, char parentIndex);
+void softln(char *path, char *outputPath, char parentIndex);
 
 #endif

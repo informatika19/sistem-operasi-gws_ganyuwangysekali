@@ -7,6 +7,6 @@ char strncmp(char *str1, char *str2, int n);
 char *strchr(const char *s, int c);
 void strcpy(char *s1, const char *s2);
 void strncpy(char *s1, const char *s2, int n);
-char *strcat(char *s1, const char *s2);
+char *strncat(char *s1, const char *s2, int n);
 
 #endif

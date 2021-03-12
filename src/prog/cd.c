@@ -1,75 +1,120 @@
 #include "progs.h"
 #include "parse.h"
 #include "stds.h"
+#include "file.h"
 
-
-int chdir(const char* path)
+// parentIndex disimpan di cwdIdx
+char chdir(char* path, int* result, char parentIndex)
 {
-	char *cwd;
-	getcwd(cwd);
-	int curDirIdx = *cwd;
-	// kasus spesial :)
+	char dir[1024];
+	char currentName[14];
+	char traversingName[14];
+	int i;
+	char tempIdx;
 	
-	if(strcmp(path, ".") == 0) return 0;
-	if(strcmp(path, "..") == 0)
+	readSector(dir, 0x101);
+	readSector(dir+512, 0x102);
+	
+	if(*path == '/')
 	{
-		if (cwd == NULL) return 1; // error
+		*result = 0;
+		tempIdx = chdir(path + 1, result, parentIndex);
+	}
+	
+	if(path != 0)
+	{
+		// parse the path one by one
 		
-		// ke parent dari cwd
-		sector[511] = files[curDirIdx * 16];
-		return 0;
-	}
+		// './'
+		if(*path == '.' && *(path+1) == '/')
+		{
+			// cd sukses
+			*result = 0;
+			tempIdx = chdir(path + 2, result, parentIndex);
+		}
 		
-	if (cwd == NULL) // root
-	{
-		// cari yang nama filenya sama dengan path dan parentIndexnya adalah 0xFF
-		for(j = 0; j <= 63; j++)
+		// '/'
+		if(*path == '/')
 		{
-			if(files[16 * j] == 0xFF && strcmp(strcpy(dummy, files[16 * j + 2], 14), path) == 0)
-			{
-				sector[511] = files[16 * j];
-				return 0;
-			}
+			// cd sukses
+			*result = 0;
+			tempIdx = chdir(path + 1, result, parentIndex); 
 		}
-	}
-	else
-	{
-		// cari yang nama filenya sama dengan path dan parentIndexnya adalah cwd[0]
-		for(j = 0; j <= 63; j++)
+		
+		// '../'
+		if(*path == '.' && *(path+1) == '.' && *(path+2) == '/')
+		{ 
+			*result = 0;
+			if(parentIndex == 0xFF) parentIndex = 0xFF;
+			else parentIndex = dir[parentIndex << 4];
+			
+			tempIdx = chdir(path + 3, result, parentIndex);
+		}
+		
+		// ambil nama file/folder nya
+		i = 0;
+		while(*path != '/' && *path != 0 && i < 14)
 		{
-			if(files[16 * j] == *cwd && strcmp(strcpy(dummy, files[16 * j + 2], 14), path) == 0)
-			{
-				sector[511] = files[16 * j];
-				return 0;
-			}
+			traversingName[i++] = *(path++);
 		}
-	}
-	return 1;
+		if(i < 14) traversingName[i] = 0;
+		if(*path != '/' && *path != 0)
+		{
+			// path invalid, more than 14 bytes long
+			*result = 3;
+			return parentIndex;
+		}
 
-	/* ALTERNATIF 1 */
-	/*
-	int errno = interrupt(0x21, 0x3b02, dummy, 0x101, path);
+		i = 0;
+		do
+		{ // compare the name with all names in dir
+			strncpy(currentName, dir + (i << 4) + 2, 14);
+			i++;
+		}
+		while(strcmp(currentName, traversingName) != 0 && dir[i << 4] != cwdIdx && i < 0x40);
+		
+		if(i == 0x40)
+		{
+			*result = 2;
+			return parentIndex;
+		} // path not in dir
+		
+		// not a folder
+		if(dir[i << 4 + 1] != 0xFF)
+		{	
+			*result = 1;
+			return parentIndex;
+		}
+		
+		// cdnya sukses
+		*result = 0;
+		tempIdx = chdir(path, result, i);
+	}
 	
-	// reference for error code :
-	// bbc.nvg.org/doc/Master%20512%20Technical%20Guide/m512techb_int21.htm
-	if (errno == 3)
+	if(*result == 0)
 	{
-		errno = interrupt(0x21, 0x3b02, dummy, 0x102, path);
-	}	
-	return errno;
-	*/
+		return tempIdx;
+	}
+	return parentIndex;
 }
 
 int main(int argc, char *argv[])
 {
-	char* args[255] = parse(argv[1], SLASH);
+	int errno = 0;
+	cwdIdx = chdir(argv[1], &errno, cwdIdx);
 	
-	int i = 0, j;
-	while (args[i] != NULL && i < 255)
+	if(errno == 1)
 	{
-		if(chdir(args[i]) == 1) return 1; // error??
-		// directorynya udah berubah karena chdir udah dipanggil
-		i++;
+		printString("Not a directory");
 	}
-	return 0;
+	else if(errno == 2)
+	{
+		printString("No such file or directory");
+	}
+	else if(errno == 3)
+	{
+		printString("Not a valid file or directory name");
+	}
+	
+	return errno;
 }

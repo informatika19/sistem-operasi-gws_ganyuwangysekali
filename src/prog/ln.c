@@ -1,163 +1,105 @@
 #include "progs.h"
 #include "parse.h"
 #include "stds.h"
+#include "file.h"
 
-
-// path singular relatif terhadap curDirIdx
-// path = .   
-// path = a   (parent path = curDirIdx)
-// path = ..
-int isDirectory(const char* path, char curDirIdx)
+void ln(char *path, char *outputPath, char parentIndex)
 {
-	if(!strcmp(path, ".")) return 1;
-	if(!strcmp(path, "..")) return 1;
-	
-	char *dummy;
-	int i;
-	for (i = 0; i <= 63; i++)
-	{
-		if(files[i] == curDirIdx)
-		{
-			// nama folder == path
-			if(!strcmp(strcpy(dummy, files[i + 2], 14), path))
-			{
-				// sectornya 0xFF dan negatif adalah folder
-				return (files[i + 1] == 0xFF || files[i + 1] < 0);
-			}
-		}
-	}
-}
-
-void ln(const char *linkedFileName, char *outputFileName)
-{
-	char* Dir;
-	char curDirIdx = sector[511];
+	int errno;
 	char *content;
-	int result;
-	
-	char* inputPath[255] = parse(linkedPath, SLASH);
-	int i = 0;
-	while(inputPath[i + 1] != NULL)
+	readFile(content, path, &errno, parentIndex);
+	if(errno == -1) // file tidak ditemukan
 	{
-		if(chdir(inputPath[i]) == 1) // error
-		{
-			return;
-		}
-		i++;
-	}
-	if(isDirectory(inputPath[i], curDirIdx)) // error
-	{
-		printString("You cannot link to a folder!");
+		printString("No such file or directory");
 		return;
 	}
-	// pasti file
-	
-	// readFile(content, inputPath[i], &result, sector[511]);
-	getcwd(Dir);
-	char inputFileSector = *(Dir + 1);
-	char inputDirIdx = sector[511];
-	
-	char* outputPath[255] = parse(outputFilePath, SLASH);
-	sector[511] = curDirIdx;
-	i = 0;
-	while(outputPath[i + 1] != NULL)
+	if(errno == -2) // adalah sebuah directory
 	{
-		if (chdir(inputPath[i]) == 1) // error
+		printString("Is a directory");
+		return;
+	}
+	
+	// file inputnya ada dan valid
+	char inputFileIdx = getPathIndex(path, parentIndex);
+	
+	char inputFilename[14];
+	getFilename(path, inputFilename);
+	
+	// semi write file :)
+	char map[512], dir[1024], sect[512];
+	char outputFilename[14], outputBasepath[512], outputParentIndex;
+	
+	int i = 0, j, k;
+	unsigned char valid = 0;
+
+  	getFilename(outputPath, outputFilename);
+  	getBasePath(outputPath, outputBasepath, parentIndex);
+  	outputParentIndex = getPathIndex(basepath, parentIndex);
+  	
+  	readSector(dir, 0x101);
+	readSector(dir + 512, 0x102);
+	
+	while(i < 0x40 && (dir[(i << 4) + 1] == 0xFF || dir[(i << 4) + 1] < 0x40)){
+		if(dir[i << 4] == outputParentIndex && strncmp(dir+(i << 4) + 2, outputFilename, 14) != 0)
 		{
+			// file sudah ada :D
+			errno = -1;
 			return;
 		}
+		if(i == parentIndex) valid = 1;
 		i++;
 	}
-	getcwd(Dir);
-	char outputDirPar = *Dir;
-	
-	/* buat file baru */
-	// mungkin writeFile(content, outputPath[i], &result, sector[511]);
-	int j = 0;
-	while(files[j] != NULL)
-	{
-		j++;
+	if(i > 0x3F){
+		// tidak ada dir kosong
+		errno = -2;
+		return;
 	}
-	files[j] = outputDirPar;
-	files[j + 1] = inputFileSector; // isinya sama
-	strcpy(&files[j + 2], outputPath[i], 14);
+	if(!valid)
+	{
+		// folder tidak valid
+    		errno = -4;
+    		return;
+	}
 	
-	// writeSector files???
+	if(errno == -1)
+	{
+		printString("failed to create hard link: File exists");
+		return;
+	}
+	else if(errno == -2)
+	{
+		printString("failed to create hard link: No empty space");
+		return;
+	}
+	else if(errno == -4)
+	{
+		printString("Not a valid file or directory name");
+		return;
+	}
 	
-	// reset
-	sector[511] = curDirIdx;
+	dir[i << 4] = outputParentIndex;
+	dir[i << 4 + 1] = dir[inputFileIdx << 4 + 1]; // menunjuk ke sektor yang sama
+	// copy filename to buffer
+	strncpy(dir + (i << 4) + 2, outputFilename, 14);
+	
+	writeSector(dir, 0x101);
+	writeSector(dir + 512, 0x102);
 }
 
-// utk soft link (ln -s)
-void softln(const char *linkedPath, char *outputFilePath)
+// TODO : Implementation
+void softln(char *path, char *outputPath, char parentIndex)
 {
-	char *Dir;
-	getcwd(Dir);
-	char curDirPar = *Dir;
-	char curDirIdx = sector[511];
-	
-	char* inputPath[255] = parse(linkedPath, SLASH);
-	// cari index dengan cd berulang :)
-	int i = 0;
-	while(inputPath[i + 1] != NULL)
-	{
-		if (chdir(inputPath[i]) == 1) // error
-		{
-			return;
-		}
-		i++;
-	}
-	if(isDirectory(inputPath[i], sector[511])) chdir(inputPath[i]); // ngelink folder
-	else // ngelink file
-	{
-		sector[511] = curDirIdx;
-		ln(linkedPath, outputFilePath);
-		return;
-	}
-	// pasti ngelink folder :v
-	
-	getcwd(Dir);
-//	char inputDirPar = *Dir;
-	char inputDirIdx = sector[511];
-	
-	char* outputPath[255] = parse(outputFilePath, SLASH);
-	sector[511] = curDirIdx;
-	i = 0;
-	while(outputPath[i + 1] != NULL)
-	{
-		if (chdir(inputPath[i]) == 1) // error
-		{
-			return;
-		}
-		i++;
-	}
-	getcwd(Dir);
-	char outputDirPar = *Dir;
-	
-	/* buat file baru */
-	int j = 0;
-	while(files[j] != NULL)
-	{
-		j++;
-	}
-	files[j] = outputDirPar;
-	files[j + 1] = -inputDirIdx; // simpan -index ke sector untuk "menyimpan" linknya
-	strcpy(&files[j + 2], outputPath[i], 14);
-	
-	// writeSector files???
-	
-	// reset
-	sector[511] = curDirIdx;
+	return;
 }
 
 int main(int argc, char *argv[])
 {
 	if(argc == 3)
 	{
-		ln(argv[1], argv[2]);
+		ln(argv[1], argv[2], cwdIdx);
 	}
 	else if(argc == 4)
 	{
-		softln(argv[2], argv[3]);
+		softln(argv[2], argv[3], cwdIdx);
 	}
 }
