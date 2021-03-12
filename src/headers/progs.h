@@ -4,14 +4,13 @@
 // pas shell dijalankan (which is pas ngeinclude filenya), diinisiasi root
 char cwdIdx = 0xFF;
 
-void cat(char *fileName); // cat
+void cat(char *path, char parentIndex); // cat
 char chdir(char* path, int* result, char parentIndex); // cd
 
 char *getcwd(char *buf);
-void ls(char* content);
+void ls(char *content, char parentIndex); // ls
 
-int isDirectory(const char* path, char curDirIdx);
-void ln(const char *linkedFileName, char *outputFileName);
-void softln(const char *linkedPath, char *outputFilePath);
+void ln(char *path, char *outputPath, char parentIndex);
+void softln(char *path, char *outputPath, char parentIndex);
 
 #endif

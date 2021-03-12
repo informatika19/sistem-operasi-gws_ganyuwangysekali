@@ -1,13 +1,13 @@
 #include "progs.h"
 #include "stds.h"
 
-/* ubah byte terakhir sector menjadi parent dari cwd */
 char *getcwd(char *buf)
 {
 	if (cwdIdx == 0xFF) // root
 	{
 		return NULL;
 	}
+	
 	char dir[1024];
 	readSector(dir, 0x101);
 	readSector(dir + 512, 0x102);
