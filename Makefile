@@ -31,6 +31,16 @@ PROGS_FOLDER=$(SRC)/prog
 IMPL=$(patsubst $(IMPL_FOLDER)/%.c, $(out)/impl_%.o, $(wildcard $(IMPL_FOLDER)/*.c))
 PROGS=$(patsubst $(PROG_FOLDER)/%.c, $(out)/prog_%.o, $(wildcard $(PROG_FOLDER)/*.c))
 
+all: $(sys_img)
+
+$(sys_img): $(out) $(bootloader) $(kernel) $(map_img) $(sectors_img) $(files_img)
+	dd if=/dev/zero of=$@ bs=512 count=2880
+	dd if=$(bootloader) of=$@ bs=512 conv=notrunc count=1
+	dd if=$(kernel) of=$@ bs=512 conv=notrunc seek=1
+	dd if=$(map_img) of=$@ bs=512 count=1 seek=256 conv=notrunc
+	dd if=$(files_img) of=$@ bs=512 count=2 seek=257 conv=notrunc
+	dd if=$(sectors_img) of=$@ bs=512 count=1 seek=259 conv=notrunc
+
 $(out)/impl_%.o: $(IMPL_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
@@ -46,21 +56,13 @@ $(boot_logo): $(boot_logo_in)
 $(map_img):
 	dd if=/dev/zero of=$@ bs=512 count=1
 	# isi KSIZE sektor pertama dengan 0xFF, karena kernel sudah mengisi fs
-	python -c 'print("\xFF"*$(KSIZE))' | dd of=$@ bs=512 count=$(KSIZE) conv=notrunc
+	python -c 'import sys; sys.stdout.buffer.write(b"\xFF"*$(KSIZE))' | dd of=$@ bs=512 count=1 conv=notrunc
 
 $(sectors_img):
 	dd if=/dev/zero of=$@ bs=512 count=1
 
 $(files_img):
 	dd if=/dev/zero of=$@ bs=512 count=2
-
-$(sys_img): $(out) $(bootloader) $(kernel) $(map_img) $(sectors_img) $(files_img)
-	dd if=/dev/zero of=$@ bs=512 count=2880
-	dd if=$(bootloader) of=$@ bs=512 conv=notrunc count=1
-	dd if=$(kernel) of=$@ bs=512 conv=notrunc seek=1
-	dd if=$(map_img) of=$@ bs=512 count=1 seek=256
-	dd if=$(files_img) of=$@ bs=512 count=2 seek=257
-	dd if=$(sectors_img) of=$@ bs=512 count=1 seek=259
 
 $(bootloader): $(bootloader_asm)
 	nasm $< -o $@
@@ -80,4 +82,4 @@ run: $(sys_img)
 clean:
 	rm -rf out/*
 
-.PHONY: build run clean
+.PHONY: build run clean all
