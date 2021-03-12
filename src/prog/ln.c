@@ -167,6 +167,7 @@ void softln(char *path, char *outputPath, char parentIndex)
 	
 		writeSector(dir, 0x101);
 		writeSector(dir + 512, 0x102);
+		return;
 	}
 	
 	// adalah sebuah file, hardlink aja :)
