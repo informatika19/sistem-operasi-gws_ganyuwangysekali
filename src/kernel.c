@@ -6,13 +6,15 @@
 
 extern unsigned char logo[];
 
+int col = 0, row = 0;
+
 int main ()
 {
 	char buffer[bufsize];
 	char sectorBuf[512]; // 1 sektor = 512 byte
 	int x, y;
 	int width = logo[0];
-	int height = logo[1];
+	int height = logo[1]-1;
 	int startx = (VGA_WIDTH - width)>>1;
 	int starty = (VGA_HEIGHT - height)>>1;
 	// set graphics mode
@@ -20,7 +22,7 @@ int main ()
 	// 13h = VGA Graphics (320x200, 256 colors)
 	interrupt(0x10, 0x0013, 0x0000, 0x0000, 0x0000);
 	// render graphics
-	for(y = width; y > 0; y--){
+	for(y = height; y > 0; y--){
 		for(x = width; x > 0; x--){
 			putInMemory(VGA_MEMORY_BASE, (y+starty) * VGA_WIDTH + (x+startx), logo[(y*width)+x]);
 		}
@@ -28,10 +30,16 @@ int main ()
 
 	makeInterrupt21();
 
+	printString("Press any key to continue...");
+	interrupt(0x16, 0, 0, 0, 0);
+	// set mode text 
+	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
+	row = 0;
+	col = 0;
+
 	while(1){
 		clear(buffer, bufsize);
 		interrupt(0x21, 0x01, buffer, 0x0000, 0x0000);
-		interrupt(0x21, 0x00, buffer, 0x0000, 0x0000);
 	}
 }
 
@@ -65,15 +73,26 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 }
 
 void printString(char *string){
-	int i = 0;
-	// set mode text 
-	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
-	clearScreen();
+	int i;
 	for(i = 0; string[i] != 0; i++){
-		// set posisi kursor
-		interrupt(0x10, 0x0200, 0x0000, 0x0000, 0x0000+i);
 		// tulis string :D
-		interrupt(0x10, 0x0900 + string[i], 0x000D, 0x0001, 0x0000);
+		if(string[i] != '\n' && string[i] != '\b')
+			interrupt(0x10, 0x0900 | string[i], 0x000F, 0x0001, 0x0000);
+		// update posisi kursor
+		if(string[i] == '\b') col--;
+		else col++;
+		if(col > TEXT_WIDTH || string[i] == '\n'){
+			col = 0;
+			row++;
+			if(row == TEXT_HEIGHT){
+				interrupt(0x10, 0x0601, 0, 0, TEXT_HEIGHT<<8|TEXT_WIDTH);
+				row--;
+			}
+		}
+		// set posisi kursor
+		interrupt(0x10, 0x0200, 0x0000, 0x0000, (row<<8)|col);
+		if(string[i] == '\b')
+			interrupt(0x10, 0x0900, 0x000F, 0x0001, 0x0000);
 	}
 }
 
@@ -81,11 +100,21 @@ void readString(char *string){
 	int length = 0;
 	char current = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
 	while(length < bufsize-1 && current != 0x0D){
-		string[length] = current;
-		length++;
+		if(current == '\b'){
+			if(length > 0) string[length--] = 0;
+			printString("\b");
+		}
+		else{
+			string[length] = current;
+			printString(string+length);
+			length++;
+		}
 		current = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
 	}
-	string[length] = 0;
+	if(current == 0x0D && length < bufsize-1){
+		string[length] = '\n';
+		printString(string+(length++));
+	}
 }
 
 void clearScreen(){

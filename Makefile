@@ -12,7 +12,7 @@ out=out
 incl=$(SRC)/headers/
 INCL_FLAG=-I$(incl)
 
-KSIZE=50
+KSIZE=60
 
 map_img=$(out)/map.img
 files_img=$(out)/files.img
