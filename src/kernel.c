@@ -14,7 +14,7 @@ int main ()
 	char sectorBuf[512]; // 1 sektor = 512 byte
 	int x, y;
 	int width = logo[0];
-	int height = logo[1];
+	int height = logo[1]-1;
 	int startx = (VGA_WIDTH - width)>>1;
 	int starty = (VGA_HEIGHT - height)>>1;
 	// set graphics mode
@@ -22,7 +22,7 @@ int main ()
 	// 13h = VGA Graphics (320x200, 256 colors)
 	interrupt(0x10, 0x0013, 0x0000, 0x0000, 0x0000);
 	// render graphics
-	for(y = width; y > 0; y--){
+	for(y = height; y > 0; y--){
 		for(x = width; x > 0; x--){
 			putInMemory(VGA_MEMORY_BASE, (y+starty) * VGA_WIDTH + (x+startx), logo[(y*width)+x]);
 		}
