@@ -168,8 +168,7 @@ char getPathIndex(char* path, char parentIndex)
 		if(*path == '/') path++; // '/'
 		if(*path == '.' && *(path+1) == '.' && *(path+2) == '/')
 		{ // '../'
-			if(parentIndex == 0xFF) parentIndex = 0xFF;
-			else parentIndex = dir[parentIndex<<4];
+			if(parentIndex != 0xFF) parentIndex = dir[parentIndex<<4];
 		}
 		i = 0;
 		while(*path != '/' && *path != 0 && i < 14)
