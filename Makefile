@@ -7,7 +7,7 @@ kernel_asm=$(SRC)/kernel.asm
 bootloader_asm=$(SRC)/bootloader.asm
 boot_logo_in=$(SRC)/boot_logo
 
-out=out
+out=out/
 
 incl=$(SRC)/headers/
 INCL_FLAG=-I$(incl)

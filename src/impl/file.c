@@ -107,7 +107,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 
 void readFile(char *buffer, char *path, int *result, char parentIndex)
 {
-	char dir[1024], sect[512], basepath[512], filename[14], S;
+	char dir[1024], sect[512], S;
 	int i, j, found, isExist, idx_P;
 
 	readSector(dir, 0x101);
@@ -119,7 +119,9 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		if (dir[idx_P * 16] == parentIndex) {
 			isExist = 1;
 		}
-		idx_P++;
+		else {
+			idx_P++;
+		}
 	}
 
 	if (isExist == 0) {
@@ -128,7 +130,7 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		return;
 	}
 
-	S = dir[realParentIndex * 16 + 1];
+	S = dir[idx_P + 1];
 	if (S == 0xFF || S >= 0x40) {
 		// yang kebaca itu folder
 		*result = -2;
