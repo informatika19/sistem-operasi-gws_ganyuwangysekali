@@ -19,9 +19,9 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	int i = 0, j, k;
 	unsigned char valid = 0;
 
-  	getFilename(path, filename);
-  	getBasePath(path, basepath, parentIndex);
-  	realParentIndex = getPathIndex(basepath, parentIndex);
+	getFilename(path, filename);
+	getBasePath(path, basepath, parentIndex);
+	realParentIndex = getPathIndex(basepath, parentIndex);
 
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
