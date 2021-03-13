@@ -23,10 +23,6 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
   	getBasePath(path, basepath, parentIndex);
   	realParentIndex = getPathIndex(basepath, parentIndex);
 
-	printString(filename);
-	printString("\n");
-	printString(basepath);
-  
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
 
@@ -152,6 +148,8 @@ char getPathIndex(char* path, char parentIndex)
 	
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
+
+	if(*path == 0) return 0xFF;
 	
 	// traverse the path
 	if(*path == '/')
@@ -200,6 +198,7 @@ void getBasePath(char* path, char* basepath, char parentIndex)
 {
 	char currentName[15];
 	int i;
+	*basepath = 0;
 	while(*path != 0)
 	{
 		i = 0;
