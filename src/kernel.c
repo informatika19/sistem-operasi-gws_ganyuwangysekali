@@ -3,6 +3,8 @@
 #include "string.h"
 #include "buffer.h"
 #include "kernel.h"
+#include "file.h"
+#include "io.h"
 
 extern unsigned char logo[];
 
@@ -69,51 +71,6 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 			break;
 		default:
 			printString("invalid interrupt");
-	}
-}
-
-void printString(char *string){
-	int i;
-	for(i = 0; string[i] != 0; i++){
-		// tulis string :D
-		if(string[i] != '\n' && string[i] != '\b')
-			interrupt(0x10, 0x0900 | string[i], 0x000F, 0x0001, 0x0000);
-		// update posisi kursor
-		if(string[i] == '\b') col--;
-		else col++;
-		if(col > TEXT_WIDTH || string[i] == '\n'){
-			col = 0;
-			row++;
-			if(row == TEXT_HEIGHT){
-				interrupt(0x10, 0x0601, 0, 0, TEXT_HEIGHT<<8|TEXT_WIDTH);
-				row--;
-			}
-		}
-		// set posisi kursor
-		interrupt(0x10, 0x0200, 0x0000, 0x0000, (row<<8)|col);
-		if(string[i] == '\b')
-			interrupt(0x10, 0x0900, 0x000F, 0x0001, 0x0000);
-	}
-}
-
-void readString(char *string){
-	int length = 0;
-	char current = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
-	while(length < bufsize-1 && current != 0x0D){
-		if(current == '\b'){
-			if(length > 0) string[length--] = 0;
-			printString("\b");
-		}
-		else{
-			string[length] = current;
-			printString(string+length);
-			length++;
-		}
-		current = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
-	}
-	if(current == 0x0D && length < bufsize-1){
-		string[length] = '\n';
-		printString(string+(length++));
 	}
 }
 
