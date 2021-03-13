@@ -107,20 +107,26 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 
 void readFile(char *buffer, char *path, int *result, char parentIndex)
 {
-	char dir[1024], sect[512], basepath[512], filename[14], realParentIndex, S;
-	int i = 0, j, found = 0;
-
-	getBasePath(path, basepath, parentIndex);
-	realParentIndex = getPathIndex(basepath, parentIndex);
-	if (realParentIndex == 0xFE) {
-		// file ga ketemu D:
-		*result = -1;
-		return;
-	}
+	char dir[1024], sect[512], basepath[512], filename[14], S;
+	int i, j, found, isExist, idx_P;
 
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
-	readSector(sect, 0x103);
+
+	idx_P = 0;
+	isExist = 0;
+	while (idx_P < 64 && isExist == 0) {
+		if (dir[idx_P * 16] == parentIndex) {
+			isExist = 1;
+		}
+		idx_P++;
+	}
+
+	if (isExist == 0) {
+		// filenya ga ada
+		*result = -1;
+		return;
+	}
 
 	S = dir[realParentIndex * 16 + 1];
 	if (S == 0xFF || S >= 0x40) {
@@ -129,6 +135,9 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		return;
 	}
 
+	readSector(sect, 0x103);
+	found = 0;
+	i = 0;
 	while (found == 0 && i < 16) {
 		j = i + S * 16;
 		if (sect[j] == 0x00) {
