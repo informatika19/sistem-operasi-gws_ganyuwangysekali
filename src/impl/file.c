@@ -79,6 +79,8 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
   // copy filename to buffer
   strncpy(dir+(i<<4)+2, filename, 14);
   // write buffer to sector
+	if(i < 0x20) writeSector(dir, 0x101);
+	else writeSector(dir+0x100, 0x102);
 	j = 0;
 	i = 0;
 	while(*sectors > 0)
@@ -92,6 +94,8 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 		}
 		j++;
 	}
+	writeSector(map, 0x100);
+	writeSector(sect, 0x103);
 }
 
 void readFile(char *buffer, char *path, int *result, char parentIndex)
