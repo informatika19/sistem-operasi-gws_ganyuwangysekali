@@ -145,9 +145,12 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		if (sect[j] == 0x00) {
 			found = 1;
 		}
-		readSector(buffer + (512 * j), sect[j]);
+		else {
+			readSector(buffer + (512 * j), sect[j]);
+		}
 		i++;
 	}
+	*result = 1;
 }
 
 char getPathIndex(char* path, char parentIndex)
