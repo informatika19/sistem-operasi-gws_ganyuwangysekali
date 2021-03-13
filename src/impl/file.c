@@ -1,6 +1,7 @@
 #include "file.h"
 #include "string.h"
 #include "buffer.h"
+#include "kernel.h"
 
 void readSector(char *buffer, int sector)
 {
@@ -21,18 +22,26 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
   	getFilename(path, filename);
   	getBasePath(path, basepath, parentIndex);
   	realParentIndex = getPathIndex(basepath, parentIndex);
+
+	printString(filename);
+	printString("\n");
+	printString(basepath);
   
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
+
+	valid = realParentIndex == 0xFF;
 	while(i < 0x40 && (dir[(i<<4) + 1] == 0xFF || dir[(i << 4) + 1] < 0x20)){
 		if(dir[i << 4] == realParentIndex && strncmp(dir+(i<<4)+2, filename, 14) != 0){
 			// file sudah ada :D
 			*sectors = -1;
 			return;
 		}
-		if(i == parentIndex) valid = 1;
+		if(i == realParentIndex) valid = 1;
 		i++;
 	}
+	i = 0;
+	while(i < 0x40 && (dir[(i<<4)+2] != 0)) i++;
 	if(i > 0x3F){
 		// tidak ada dir kosong
 		*sectors = -2;
@@ -63,6 +72,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	
 	// baca sectors
 	readSector(sect, 0x103);
+	k = 0;
   while(k < 0x20 && sect[k<<4] != 0) k++;
   if(k == 0x20){
     // sectors ga muat
@@ -79,18 +89,19 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
   // copy filename to buffer
   strncpy(dir+(i<<4)+2, filename, 14);
   // write buffer to sector
-	if(i < 0x20) writeSector(dir, 0x101);
-	else writeSector(dir+0x100, 0x102);
+	writeSector(dir, 0x101);
+	writeSector(dir+0x100, 0x102);
 	j = 0;
 	i = 0;
 	while(*sectors > 0)
 	{
 		if(map[j] != 0xFF)
 		{
-			i++;
-			writeSector(buffer, j);
+			writeSector(buffer+(i<<8), j);
 			sect[(k<<4)+i] = j;
 			map[j] = 0xFF;
+			i++;
+			*sectors--;
 		}
 		j++;
 	}
@@ -208,7 +219,9 @@ void getBasePath(char* path, char* basepath, char parentIndex)
 
 void getFilename(char* path, char* filename)
 {
-	while(*path != 0) path++;
-	while(*path != '/') path--;
-	strncpy(filename, path+1, 14);
+	char* mpath = path;
+	while(*mpath != 0) mpath++;
+	while(*mpath != '/' && mpath != path) mpath--;
+	if(*mpath == '/') mpath++;
+	strncpy(filename, mpath, 14);
 }
