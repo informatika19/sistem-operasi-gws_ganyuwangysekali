@@ -1,5 +1,5 @@
 #include "progs.h"
-#include "parse.h"
+// #include "parse.h"
 #include "stds.h"
 #include "file.h"
 
@@ -30,5 +30,5 @@ void cat(char *path, char parentIndex)
 
 int main(int argc, char *argv[])
 {
-	cat(argv[1]);
+	// cat(argv[1]);
 }
