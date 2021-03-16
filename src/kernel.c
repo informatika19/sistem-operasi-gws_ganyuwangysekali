@@ -35,6 +35,7 @@ int main ()
 	printString("Press any key to continue...");
 	interrupt(0x16, 0, 0, 0, 0);
 	
+	runShell();
 	// set mode text 
 	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
 	row = 0;

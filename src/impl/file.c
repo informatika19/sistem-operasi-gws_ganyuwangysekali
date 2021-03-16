@@ -69,22 +69,23 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	// baca sectors
 	readSector(sect, 0x103);
 	k = 0;
-  while(k < 0x20 && sect[k<<4] != 0) k++;
-  if(k == 0x20){
-    // sectors ga muat
-    *sectors = -3;
-    return;
-  }
+	
+	while(k < 0x20 && sect[k<<4] != 0) k++;
+	if(k == 0x20){
+		// sectors ga muat
+		*sectors = -3;
+		return;
+	}
 
-  // clear buffer files
-  clear(dir+(i<<4), 16);
-  // put parent index
+  	// clear buffer files
+  	clear(dir+(i<<4), 16);
+  	// put parent index
 	dir[(i<<4)] = realParentIndex;
-  // put sector index
+  	// put sector index
 	dir[(i<<4)+1] = k;
-  // copy filename to buffer
-  strncpy(dir+(i<<4)+2, filename, 14);
-  // write buffer to sector
+  	// copy filename to buffer
+ 	strncpy(dir+(i<<4)+2, filename, 14);
+ 	// write buffer to sector
 	writeSector(dir, 0x101);
 	writeSector(dir+0x100, 0x102);
 	j = 0;
@@ -129,9 +130,14 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		*result = -1;
 		return;
 	}
-
-	S = dir[idx_P + 1];
-	if (S == 0xFF || S >= 0x20) {
+	
+	// kasus symlink
+	S = dir[idx_P << 4 + 1];
+	while(S >= 0x40)
+	{
+		S = dir[(S - 0x40) << 4 + 1];
+	}
+	if (S == 0xFF) {
 		// yang kebaca itu folder
 		*result = -2;
 		return;
