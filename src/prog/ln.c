@@ -1,5 +1,5 @@
 #include "progs.h"
-#include "parse.h"
+// #include "parse.h"
 #include "stds.h"
 #include "file.h"
 
@@ -105,7 +105,7 @@ void softln(char *path, char *outputPath, char parentIndex)
 	
 		// semi write file :)
 		char dir[1024];
-		char outputName[14], outputBasepath[512], outputParentIdx;
+		char outputName[14], outputBasepath[512], outputParentIndex;
 		
 		int i = 0;
 		unsigned char valid = 0;
@@ -118,7 +118,7 @@ void softln(char *path, char *outputPath, char parentIndex)
 		readSector(dir + 512, 0x102);
 	
 		while(i < 0x40 && (dir[(i << 4) + 1] == 0xFF || dir[(i << 4) + 1] < 0x20)){
-			if(dir[i << 4] == outputParentIndex && strncmp(dir + (i << 4) + 2, outputFilename, 14) != 0)
+			if(dir[i << 4] == outputParentIndex && strncmp(dir + (i << 4) + 2, outputName, 14) != 0)
 			{
 				// file/folder sudah ada :D
 				errno = -1;
@@ -163,7 +163,7 @@ void softln(char *path, char *outputPath, char parentIndex)
 		dir[i << 4 + 1] = dir[inputFileIdx << 4] + 0x20;
 		
 		// copy filename to buffer
-		strncpy(dir + (i << 4) + 2, outputFilename, 14);
+		strncpy(dir + (i << 4) + 2, outputName, 14);
 	
 		writeSector(dir, 0x101);
 		writeSector(dir + 512, 0x102);

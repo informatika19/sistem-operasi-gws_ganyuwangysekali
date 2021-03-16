@@ -13,7 +13,7 @@ void ls(char *content, char parentIndex)
 		return;
 	}
 	
-	for(i = 0; i <= 0x3F; i++)
+	for(int i = 0; i <= 0x3F; i++)
 	{
 		// parent dari isifile = direktori sekarang
 		if (dir[16 * i] == parentIndex)

@@ -1,4 +1,5 @@
 #include "stds.h"
+#include "string.h"
 
 /*** IMPLEMENTASI STRING.H ***/
 int strlen(char *str) {
