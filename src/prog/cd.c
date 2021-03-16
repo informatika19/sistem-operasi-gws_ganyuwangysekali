@@ -3,15 +3,15 @@
 #include "file.h"
 
 // parentIndex disimpan di cwdIdx
-char chdir(char* path, int* result ,char parentIndex)
+char chdir(char* inputPath, int* result, char parentIndex)
 {
-	if(*path == 0)
+	if(*inputPath == 0)
 	{
 		*result = 0;
 		return 0xFF;
 	}
 	
-	char pathIndex = getPathIndex(path, parentIndex);
+	char pathIndex = getPathIndex(inputPath, parentIndex);
 	
 	if(pathIndex == 0xFE)
 	{
@@ -34,6 +34,7 @@ char chdir(char* path, int* result ,char parentIndex)
 	return pathIndex;
 }
 
+/*
 int main(int argc, char *argv[])
 {
 	int errno = 0;
@@ -50,3 +51,4 @@ int main(int argc, char *argv[])
 	
 	return errno;
 }
+*/

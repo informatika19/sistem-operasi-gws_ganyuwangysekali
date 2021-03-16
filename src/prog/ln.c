@@ -1,14 +1,15 @@
 #include "progs.h"
 #include "stds.h"
 #include "file.h"
+#include "shell.h"
 
-void ln(char *path, char *outputPath, char parentIndex)
+void ln(char *inputPath, char *outputPath, char parentIndex)
 {
 	int errno;
 	char *content;
 	
 	/* Mengolah path input */
-	readFile(content, path, &errno, parentIndex);
+	readFile(content, inputPath, &errno, parentIndex);
 	if(errno == -1) // file tidak ditemukan
 	{
 		printString("No such file or directory");
@@ -32,9 +33,9 @@ void ln(char *path, char *outputPath, char parentIndex)
   	readSector(dir, 0x101);
 	readSector(dir + 512, 0x102);
 	
-	char inputFileIdx = getPathIndex(path, parentIndex);
+	char inputFileIdx = getPathIndex(inputPath, parentIndex);
 	char inputFilename[14];
-	getFilename(path, inputFilename);
+	getFilename(inputPath, inputFilename);
 	
 	char outputFilename[14], outputBasepath[512], outputParentIndex;
   	getFilename(outputPath, outputFilename);
@@ -67,11 +68,11 @@ void ln(char *path, char *outputPath, char parentIndex)
 	return;
 }
 
-void softln(char *path, char *outputPath, char parentIndex)
+void softln(char *inputPath, char *outputPath, char parentIndex)
 {
 	int errno;
 	char *content;
-	readFile(content, path, &errno, parentIndex);
+	readFile(content, inputPath, &errno, parentIndex);
 	if(errno == -1) // file tidak ditemukan
 	{
 		printString("No such file or directory");
@@ -91,7 +92,7 @@ void softln(char *path, char *outputPath, char parentIndex)
   		readSector(dir, 0x101);
 		readSector(dir + 512, 0x102);
 	
-		char inputFileIdx = getPathIndex(path, parentIndex);
+		char inputFileIdx = getPathIndex(inputPath, parentIndex);
 		char inputFilename[14];
 		getFilename(path, inputFilename);
 		
@@ -128,10 +129,11 @@ void softln(char *path, char *outputPath, char parentIndex)
 	}
 	
 	// adalah sebuah file, hardlink aja :)
-	ln(path, outputPath, parentIndex);
+	ln(inputPath, outputPath, parentIndex);
 	return;
 }
 
+/*
 int main(int argc, char *argv[])
 {
 	if(argc == 3)
@@ -143,3 +145,4 @@ int main(int argc, char *argv[])
 		softln(argv[2], argv[3], cwdIdx);
 	}
 }
+*/

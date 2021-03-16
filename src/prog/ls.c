@@ -25,9 +25,11 @@ void ls(char *content, char parentIndex)
 	return;
 }
 
+/*
 int main(int argc, char *argv[])
 {
 	char *content;
 	ls(content, cwdIdx);
 	printString(content);
 }
+*/

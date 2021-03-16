@@ -2,11 +2,11 @@
 #include "stds.h"
 #include "file.h"
 
-void cat(char *path, char parentIndex)
+void cat(char *inputPath, char parentIndex)
 {
 	char* content;
 	int errno;
-	readFile(content, path, &errno, parentIndex);
+	readFile(content, inputPath, &errno, parentIndex);
 	
 	if(errno == -1) // file not found
 	{
@@ -23,7 +23,9 @@ void cat(char *path, char parentIndex)
 	return;
 }
 
+/*
 int main(int argc, char *argv[])
 {
 	cat(argv[1]);
 }
+*/
