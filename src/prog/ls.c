@@ -7,7 +7,7 @@ void ls(char *content, char parentIndex)
 	readSector(dir, 0x101);
 	readSector(dir + 512, 0x102);
 	
-	while(dir[parentIndex << 4 + 1] > 0x40)
+	while(dir[parentIndex << 4 + 1] >= 0x40)
 	{
 		parentIndex = dir[parentIndex << 4 + 1] - 0x40;
 	}
