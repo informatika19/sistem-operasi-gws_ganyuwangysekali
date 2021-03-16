@@ -24,6 +24,12 @@ char chdir(char* inputPath, int* result, char parentIndex)
 	readSector(dir, 0x101);
 	readSector(dir + 512, 0x102);
 	
+	// kasus softlink
+	while(dir[pathIndex << 4 + 1] >= 0x40)
+	{
+		pathIndex = dir[pathIndex << 4 + 1] - 0x40;
+	}
+	
 	// sectornya itu sector file
 	if ((dir[(pathIndex << 4) + 1] <= 0x1F) && (dir[(pathIndex << 4) + 1] >= 0x00))
 	{

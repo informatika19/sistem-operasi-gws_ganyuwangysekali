@@ -69,22 +69,23 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	// baca sectors
 	readSector(sect, 0x103);
 	k = 0;
-  while(k < 0x20 && sect[k<<4] != 0) k++;
-  if(k == 0x20){
-    // sectors ga muat
-    *sectors = -3;
-    return;
-  }
+	
+	while(k < 0x20 && sect[k<<4] != 0) k++;
+	if(k == 0x20){
+		// sectors ga muat
+		*sectors = -3;
+		return;
+	}
 
-  // clear buffer files
-  clear(dir+(i<<4), 16);
-  // put parent index
+  	// clear buffer files
+  	clear(dir+(i<<4), 16);
+  	// put parent index
 	dir[(i<<4)] = realParentIndex;
-  // put sector index
+  	// put sector index
 	dir[(i<<4)+1] = k;
-  // copy filename to buffer
-  strncpy(dir+(i<<4)+2, filename, 14);
-  // write buffer to sector
+  	// copy filename to buffer
+ 	strncpy(dir+(i<<4)+2, filename, 14);
+ 	// write buffer to sector
 	writeSector(dir, 0x101);
 	writeSector(dir+0x100, 0x102);
 	j = 0;
