@@ -41,7 +41,6 @@ int main ()
 	col = 0;
 
 	while(1){
-		runShell();
 		clear(buffer, bufsize);
 		interrupt(0x21, 0x01, buffer, 0x0000, 0x0000);
 	}
