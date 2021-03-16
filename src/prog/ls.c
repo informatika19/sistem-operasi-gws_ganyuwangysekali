@@ -7,10 +7,9 @@ void ls(char *content, char parentIndex)
 	readSector(dir, 0x101);
 	readSector(dir + 512, 0x102);
 	
-	if(dir[parentIndex << 4 + 1] > 0x20)
+	while(dir[parentIndex << 4 + 1] > 0x20)
 	{
-		ls(content, dir[parentIndex << 4 + 1] - 0x20);
-		return;
+		parentIndex = dir[parentIndex << 4 + 1] - 0x20;
 	}
 	
 	for(int i = 0; i <= 0x3F; i++)
@@ -23,6 +22,7 @@ void ls(char *content, char parentIndex)
 		}
 	}
 	strncat(content, 0, 1);
+	return;
 }
 
 int main(int argc, char *argv[])

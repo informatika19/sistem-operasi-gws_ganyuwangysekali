@@ -1,5 +1,4 @@
 #include "progs.h"
-// #include "parse.h"
 #include "stds.h"
 #include "file.h"
 
@@ -9,11 +8,7 @@ void cat(char *path, char parentIndex)
 	int errno;
 	readFile(content, path, &errno, parentIndex);
 	
-	if(errno == 0)
-	{
-		printString(content);
-	}
-	else if(errno == -1) // file not found
+	if(errno == -1) // file not found
 	{
 		printString("No such file or directory");
 	}
@@ -30,5 +25,5 @@ void cat(char *path, char parentIndex)
 
 int main(int argc, char *argv[])
 {
-	// cat(argv[1]);
+	cat(argv[1]);
 }
