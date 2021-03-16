@@ -12,6 +12,14 @@ void printString(char *string){
 		// update posisi kursor
 		if(string[i] == '\b') col--;
 		else col++;
+		if(col < 0){
+			col = TEXT_WIDTH;
+			row--;
+			if(row < 0){
+				interrupt(0x10, 0x0701, 0, 0, TEXT_HEIGHT<<8|TEXT_WIDTH);
+				row = 0;
+			}
+		}
 		if(col > TEXT_WIDTH || string[i] == '\n'){
 			col = 0;
 			row++;
@@ -32,8 +40,10 @@ void readString(char *string){
 	char current = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
 	while(length < bufsize-1 && current != 0x0D){
 		if(current == '\b'){
-			if(length > 0) string[length--] = 0;
-			printString("\b");
+			if(length > 0){
+				string[length--] = 0;
+				printString("\b");
+			}
 		}
 		else{
 			string[length] = current;
@@ -69,6 +79,7 @@ void printInt(int x){
 void printHex(unsigned int x){
   char current[2];
   unsigned int y, i;
+	current[1] = 0;
   printString("0x");
   while(x > 0xF){
     y = x;
