@@ -125,7 +125,8 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		return;
 	}
 	S = dir[(S<<4)+1];
-	if (S == 0xFF || S >= 0x20) {
+	if(S > 0x1F && S != 0xFF) dir[((S-0x20)<<4)+1];
+	if (S == 0xFF) {
 		// yang kebaca itu folder
 		*result = -2;
 		return;
@@ -157,7 +158,7 @@ char getPathIndex(char* path, char parentIndex)
 	readSector(dir, 0x101);
 	readSector(dir+512, 0x102);
 
-	if(*path == 0) return 0xFF;
+	if(*path == 0) return parentIndex;
 	
 	// traverse the path
 	if(*path == '/')
@@ -167,37 +168,39 @@ char getPathIndex(char* path, char parentIndex)
 		path++;
 	}
 	
-	while(path != 0)
+	while(*path != 0)
 	{ 
 		// let's parse the path until the very end
-		if(*path == '.' && *(path+1) == '/') path += 2; // './'
+		if(*path == '.' && (*(path+1) == '/' || *(path+1) == 0)) path += 1 + (*(path+1) == '/'); // './'
 		if(*path == '/') path++; // '/'
-		if(*path == '.' && *(path+1) == '.' && *(path+2) == '/')
-		{ // '../'
-			if(parentIndex != 0xFF) parentIndex = dir[parentIndex<<4];
+		if(*path == '.' && *(path+1) == '.' && (*(path+2) == '/' || *(path+2) == 0)) { // '../'
+			if(parentIndex != 0xFF){
+				parentIndex = dir[parentIndex<<4];
+			}
+			path += 2 + (*(path+2) == '/');
 		}
+		if(*path == 0) break;
 		i = 0;
-		while(*path != '/' && *path != 0 && i < 14)
-		{
-			traversingName[i++] = *(path++);
+		while(*path != '/' && *path != 0 && i < 14) {
+			traversingName[i++] = *path;
+			path++;
 		}
 		if(i < 14) traversingName[i] = 0;
-		if(*path != '/' && *path != 0)
-		{
+		if(*path != '/' && *path != 0) {
 			// path invalid, more than 14 bytes long
 			return 0xFE;
 		}
 		i = 0;
-		do
-		{ // compare the name with all names in dir
-			strncpy(currentName, dir + (i << 4) + 2, 14);
+		while(i < 0x40){
+			// compare the name with all names in dir
+			if(dir[i << 4] == parentIndex && strncmp(dir + (i<<4) + 2, traversingName, 14) == 0) break;
 			i++;
 		}
-		while(strcmp(currentName, traversingName) != 0 && dir[i << 4] != parentIndex && i < 0x40);
 		
-		if(i == 0x40) return 0xFE; // path not in dir
+		if(i == 0x40 || dir[(i<<4)+2] == 0) return 0xFE; // path not in dir
+		if(dir[(i<<4)+1] > 0x1F && dir[(i<<4)+1] != 0xFF) i = (dir[(i<<4)+1]-0x20); // dereference symlink
 		parentIndex = i;
-		if(dir[parentIndex << 4 + 1] != 0xFF) break;
+		if(dir[(parentIndex << 4) + 1] != 0xFF) 0xFE; // path not valid
 	}
 	return parentIndex;
 }

@@ -4,56 +4,67 @@
 
 void runShell() {
     unsigned char arrowClick;
-    char command[512], path, lsContent[32], changedPath, commandHistory[8], cmd[8];
+    char command[512], path, changedPath, commandHistory[8][512], cmd[8];
     char prompt[100];
     int errNo, historyCount, historyIdx, i;
 
-
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
+    
     path = 0xFF;
     arrowClick = 0;
     historyCount = 0;
     historyIdx = -1;
+    printPrompt(prompt, path);
     while (1) {
-        if (arrowClick == 0) {
-            printPrompt(prompt, path);
+        if(arrowClick == 0)
+            clear(command, 512);
+        clear(cmd, 8);
+        readString(command+strlen(command));
+        if(command[strlen(command)-1] == '\n') command[strlen(command)-1] = 0;
+        i = 0;
+        while(command[i] != 0) i++;
+
+        if (command[i] == 0x00 && command[i+1] != 0) { // maybe special command?
+            // ini ke atas yak
+            errNo = strlen(commandHistory[historyIdx]);
+            if (command[i+1] == 0x48) {
+                historyIdx++;
+            }
+            // ini ke bawah
+            else if (command[i+1] == 0x50) {
+                historyIdx--;
+            }
+
+            if(historyIdx < 0){
+                historyIdx = -1;
+                arrowClick = 0;
+            }
+            else if(historyIdx > historyCount){
+                historyIdx = historyCount;
+            }
+            for(i = 0; i < errNo; i++) printString("\b"); // hapus history sebelumnya
+            clear(command, 512);
+            strcpy(command, commandHistory[historyIdx]);
+            printString(commandHistory[historyIdx]);
+            arrowClick = 1;
         }
 
-        clear(command, 512);
-        readString(command);
-        command[strlen(command)-1] = 0;
-        i = 0;
-        while(command[i++] != ' ') cmd[i-1] = command[i-1];
-
-        // if (command[0] == 0x00 && command[1] != 0x00) {
-        //     // ini ke atas yak
-        //     if (command[1] == 0x38) {
-        //         historyIdx--;
-        //     }
-        //     // ini ke bawah
-        //     else if (command[1] == 0x40) {
-        //         historyIdx++;
-        //     }
-
-        //     if (historyIdx >= 0 && historyIdx < historyCount) {
-        //         printString(commandHistory[historyIdx]);
-        //     }
-
-        //     arrowClick = 1;
-        // }
-
-        // else {
-            arrowClick = 0;
+        else {
+            i = 0;
+            while(command[i] != ' ' && command[i] != 0){
+                cmd[i] = command[i];
+                i++;
+            }
             if (strncmp(cmd, "cd", 2) == 0) {
                 changedPath = chdir(command+2, &errNo, path);
                 if (errNo == 1) {
-                    printString("Not a directory");
+                    printString("Not a directory\n");
                 }
                 else if (errNo == 2) {
-                    printString("No such file or directory");
+                    printString("No such file or directory\n");
                 }
                 else if (errNo == 3) {
-                    printString("Not a valid file or directory");
+                    printString("Not a valid file or directory\n");
                 }
                 else {
                     path = changedPath;
@@ -61,7 +72,7 @@ void runShell() {
             }
 
             else if (strncmp(cmd, "ls", 2) == 0) {
-                ls(path);
+                ls(command+2, path);
             }
 
             else if (strncmp(cmd, "cat", 3) == 0) {
@@ -69,27 +80,24 @@ void runShell() {
             }
 
             else if (strncmp(cmd, "ln", 2) == 0) {
-                if (strncmp(command+3, "-s ", 3)) {
-                    // softln(command+6, , path);
-                }
-                else {
-                    // ln (command+3, , path);
-                }
+                ln(command+2, path);
             }
 
             else {
-                printString("No command found");
+                printString("No command found\n");
             }
-            // printString("\n");
 
-            // // simpen history
-            // for (i = historyCount-1; i > 0; i--) {
-            //     strcpy(commandHistory[i], commandHistory[i-1]);
-            // }
-            // strcpy(commandHistory[historyCount], command);
-            // historyCount++;
-            // historyIdx = historyCount-1;
-        // }
+            // simpen history
+            historyCount++;
+            if(historyCount > 8) historyCount = 8;
+            historyIdx = -1;
+            for (i = historyCount-1; i > 0; i--) {
+                strcpy(commandHistory[i], commandHistory[i-1]);
+            }
+            strcpy(commandHistory, command);
+            printPrompt(prompt, path);
+            arrowClick = 0;
+        }
     }
 }
 

@@ -34,12 +34,14 @@ int main ()
 
 	printString("Press any key to continue...");
 	interrupt(0x16, 0, 0, 0, 0);
+	
 	// set mode text 
 	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
 	row = 0;
 	col = 0;
 
 	while(1){
+		runShell();
 		clear(buffer, bufsize);
 		interrupt(0x21, 0x01, buffer, 0x0000, 0x0000);
 	}
@@ -64,10 +66,10 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 			writeSector(BX, CX);
 			break;
 		case 0x04:
-//			readFile(BX, CX, DX, AH);
+			readFile(BX, CX, DX, AH);
 			break;
 		case 0x05:
-//			writeFile(BX, CX, DX, AH);
+			writeFile(BX, CX, DX, AH);
 			break;
 		default:
 			printString("invalid interrupt");
