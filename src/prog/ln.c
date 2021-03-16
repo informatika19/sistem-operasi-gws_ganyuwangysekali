@@ -6,6 +6,8 @@ void ln(char *path, char *outputPath, char parentIndex)
 {
 	int errno;
 	char *content;
+	
+	/* Mengolah path input */
 	readFile(content, path, &errno, parentIndex);
 	if(errno == -1) // file tidak ditemukan
 	{
@@ -18,61 +20,40 @@ void ln(char *path, char *outputPath, char parentIndex)
 		return;
 	}
 	
-	// file inputnya ada dan valid
-	char inputFileIdx = getPathIndex(path, parentIndex);
-	
-	char inputFilename[14];
-	getFilename(path, inputFilename);
-	
-	// semi write file :)
-	char dir[1024];
-	char outputFilename[14], outputBasepath[512], outputParentIndex;
-	
-	int i = 0;
-	unsigned char valid = 0;
-
-  	getFilename(outputPath, outputFilename);
-  	getBasePath(outputPath, outputBasepath, parentIndex);
-  	outputParentIndex = getPathIndex(outputBasepath, parentIndex);
-  	
-  	readSector(dir, 0x101);
-	readSector(dir + 512, 0x102);
-	
-	while(i < 0x40 && (dir[(i << 4) + 1] == 0xFF || dir[(i << 4) + 1] < 0x20)){
-		if(dir[i << 4] == outputParentIndex && strncmp(dir+(i << 4) + 2, outputFilename, 14) != 0)
-		{
-			// file sudah ada :D
-			errno = -1;
-			return;
-		}
-		if(i == parentIndex) valid = 1;
-		i++;
-	}
-	if(i > 0x3F){
-		// tidak ada dir kosong
-		errno = -2;
-		return;
-	}
-	if(!valid)
-	{
-		// folder tidak valid
-    		errno = -4;
-    		return;
-	}
-	
-	if(errno == -1)
+	/* Mengolah path output */
+	readFile(content, outputPath, &errno, parentIndex);
+	if(errno == -1 || errno == -2) // file outputnya sudah ada :v
 	{
 		printString("failed to create hard link: File exists");
 		return;
 	}
-	else if(errno == -2)
+	/* DI BAGIAN INI, FILE INPUT MAUPUN OUTPUT SUDAH VALID */
+	char dir[1024];
+  	readSector(dir, 0x101);
+	readSector(dir + 512, 0x102);
+	
+	char inputFileIdx = getPathIndex(path, parentIndex);
+	char inputFilename[14];
+	getFilename(path, inputFilename);
+	
+	char outputFilename[14], outputBasepath[512], outputParentIndex;
+  	getFilename(outputPath, outputFilename);
+  	getBasePath(outputPath, outputBasepath, parentIndex);
+  	outputParentIndex = getPathIndex(outputBasepath, parentIndex);
+  	
+  	int i = 0;
+	unsigned char valid = 0;
+	while(i <= 0x3F)
 	{
-		printString("failed to create hard link: No empty space");
-		return;
+		// dengan asumsi namafile tidak kosong
+		if(dir[i << 4 + 2] == 0) break;
+		i++;
 	}
-	else if(errno == -4)
+	
+	if(i > 0x3F)
 	{
-		printString("Not a valid file or directory name");
+		// tidak ada dir kosong
+		printString("failed to create hard link: No empty space");
 		return;
 	}
 	
@@ -83,6 +64,7 @@ void ln(char *path, char *outputPath, char parentIndex)
 	
 	writeSector(dir, 0x101);
 	writeSector(dir + 512, 0x102);
+	return;
 }
 
 void softln(char *path, char *outputPath, char parentIndex)
@@ -97,72 +79,48 @@ void softln(char *path, char *outputPath, char parentIndex)
 	}
 	if(errno == -2) // adalah sebuah directory
 	{
-		char inputFileIdx = getPathIndex(path, parentIndex);
-	
-		char inputFilename[14];
-		getFilename(path, inputFilename);
-	
-		// semi write file :)
+		/* Mengolah path output */
+		readFile(content, outputPath, &errno, parentIndex);
+		if(errno == -1 || errno == -2) // file outputnya sudah ada
+		{
+			printString("failed to create soft link: File exists");
+			return;
+		}
+		/* DI BAGIAN INI, FILE INPUT MAUPUN OUTPUT SUDAH VALID */
 		char dir[1024];
-		char outputName[14], outputBasepath[512], outputParentIndex;
-		
-		int i = 0;
-		unsigned char valid = 0;
-
-  		getFilename(outputPath, outputName);
-  		getBasePath(outputPath, outputBasepath, parentIndex);
-  		outputParentIndex = getPathIndex(outputBasepath, parentIndex);
-  		
   		readSector(dir, 0x101);
 		readSector(dir + 512, 0x102);
 	
-		while(i < 0x40 && (dir[(i << 4) + 1] == 0xFF || dir[(i << 4) + 1] < 0x20)){
-			if(dir[i << 4] == outputParentIndex && strncmp(dir + (i << 4) + 2, outputName, 14) != 0)
-			{
-				// file/folder sudah ada :D
-				errno = -1;
-				return;
-			}
-			if(i == parentIndex) valid = 1;
+		char inputFileIdx = getPathIndex(path, parentIndex);
+		char inputFilename[14];
+		getFilename(path, inputFilename);
+		
+		char outputFilename[14], outputBasepath[512], outputParentIndex;
+  		getFilename(outputPath, outputFilename);
+  		getBasePath(outputPath, outputBasepath, parentIndex);
+  		outputParentIndex = getPathIndex(outputBasepath, parentIndex);
+  	
+  		int i = 0;
+		unsigned char valid = 0;
+		while(i <= 0x3F)
+		{
+			// dengan asumsi namafile tidak kosong
+			if(dir[i << 4 + 2] == 0) break;
 			i++;
 		}
-		if(i > 0x3F){
+	
+		if(i > 0x3F)
+		{
 			// tidak ada dir kosong
-			errno = -2;
-			return;
-		}
-		
-		if(!valid)
-		{
-			// folder tidak valid
-    			errno = -4;
-    			return;
-		}
-		
-		if(errno == -1)
-		{
-			printString("failed to create soft link: File or directory exists");
-			return;
-		}
-		else if(errno == -2)
-		{
 			printString("failed to create soft link: No empty space");
-			return;
-		}
-		else if(errno == -4)
-		{
-			printString("Not a valid file or directory name");
 			return;
 		}
 	
 		dir[i << 4] = outputParentIndex;
-		
-		// catat link ke folder dengan
-		// sectornya 32 + index folder yang ditunjuk nya
-		dir[i << 4 + 1] = dir[inputFileIdx << 4] + 0x20;
+		dir[i << 4 + 1] = inputFileIdx + 0x20;
 		
 		// copy filename to buffer
-		strncpy(dir + (i << 4) + 2, outputName, 14);
+		strncpy(dir + (i << 4) + 2, outputFilename, 14);
 	
 		writeSector(dir, 0x101);
 		writeSector(dir + 512, 0x102);

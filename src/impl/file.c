@@ -131,7 +131,7 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 	}
 
 	S = dir[idx_P + 1];
-	if (S == 0xFF || S >= 0x40) {
+	if (S == 0xFF || S >= 0x20) {
 		// yang kebaca itu folder
 		*result = -2;
 		return;
