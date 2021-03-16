@@ -37,7 +37,9 @@ void printString(char *string){
 
 void readString(char *string){
 	int length = 0;
-	char current = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
+	char current;
+	int c = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
+	current = (char)(c&0xFF);
 	while(length < bufsize-1 && current != 0x0D){
 		if(current == '\b'){
 			if(length > 0){
@@ -45,12 +47,18 @@ void readString(char *string){
 				printString("\b");
 			}
 		}
+		if(current == 0){ // non-printable, extra keys
+			string[length++] = current;
+			string[length++] = (char)(c>>8);
+			break;
+		}
 		else{
 			string[length] = current;
 			printString(string+length);
 			length++;
 		}
-		current = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
+		c = interrupt(0x16, 0x0000, 0x0000, 0x0000, 0x0000);
+		current = (char)(c&0xFF);
 	}
 	if(current == 0x0D && length < bufsize-1){
 		string[length] = '\n';
