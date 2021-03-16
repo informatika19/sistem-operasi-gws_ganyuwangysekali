@@ -5,13 +5,15 @@
 // parentIndex disimpan di cwdIdx
 char chdir(char* inputPath, int* result, char parentIndex)
 {
+	char pathIndex, dir[1024];
+	while(*inputPath == ' ') inputPath++;
 	if(*inputPath == 0)
 	{
 		*result = 0;
 		return 0xFF;
 	}
 	
-	char pathIndex = getPathIndex(inputPath, parentIndex);
+	pathIndex = getPathIndex(inputPath, parentIndex);
 	
 	if(pathIndex == 0xFE)
 	{
@@ -19,12 +21,11 @@ char chdir(char* inputPath, int* result, char parentIndex)
 		return parentIndex;
 	}
 	
-	char dir[1024];
 	readSector(dir, 0x101);
 	readSector(dir + 512, 0x102);
 	
 	// sectornya itu sector file
-	if ((dir[pathIndex << 4 + 1] <= 0x1F) && (dir[pathIndex << 4 + 1] >= 0x00)
+	if ((dir[(pathIndex << 4) + 1] <= 0x1F) && (dir[(pathIndex << 4) + 1] >= 0x00))
 	{
 		*result = 1;
 		return parentIndex;
