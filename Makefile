@@ -29,7 +29,7 @@ IMPL_FOLDER=$(SRC)/impl
 PROGS_FOLDER=$(SRC)/prog
 
 IMPL=$(patsubst $(IMPL_FOLDER)/%.c, $(out)/impl_%.o, $(wildcard $(IMPL_FOLDER)/*.c))
-PROGS=$(patsubst $(PROG_FOLDER)/%.c, $(out)/prog_%.o, $(wildcard $(PROG_FOLDER)/*.c))
+PROGS=$(patsubst $(PROGS_FOLDER)/%.c, $(out)/prog_%.o, $(wildcard $(PROGS_FOLDER)/*.c))
 
 all: $(sys_img)
 
@@ -44,7 +44,7 @@ $(sys_img): $(out) $(bootloader) $(kernel) $(map_img) $(sectors_img) $(files_img
 $(out)/impl_%.o: $(IMPL_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
-$(out)/prog_%.o: $(PROG_FOLDER)/%.c
+$(out)/prog_%.o: $(PROGS_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
 $(out):
