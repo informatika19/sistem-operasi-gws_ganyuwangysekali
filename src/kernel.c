@@ -40,11 +40,7 @@ int main ()
 	row = 0;
 	col = 0;
 
-	while(1){
-		clear(buffer, bufsize);
-		runShell();
-		interrupt(0x21, 0x01, buffer, 0x0000, 0x0000);
-	}
+	runShell();
 }
 
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
