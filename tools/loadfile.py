@@ -50,13 +50,6 @@ if len(filename) > 14:
   print(f'Filename can\'t be longer than 14 characters in fs')
   exit(4)
 
-# check existence
-for i in range(0x40):
-  offset = i<<4
-  if fileSection[offset] == 0xFF and str(fileSection[offset+2:offset+16]) == filename:
-    print(f'File exists in root fs')
-    exit(3)
-
 # check folder hierarchy
 currentParent = 0xFF
 
@@ -81,6 +74,13 @@ for p in pathHierarchy:
         fileSection = fileSection[:offset] + bytes([currentParent, 0xFF]) + bytearray(p, ENCODING) + bytes([0 for _ in range(14-len(p))]) + fileSection[offset+16:]
         currentParent = i
         break
+
+# check existence
+for i in range(0x40):
+  offset = i<<4
+  if fileSection[offset] == currentParent and fileSection[offset+2:offset+16].decode().rstrip('\x00') == filename:
+    print(f'File exists in root fs')
+    exit(3)
 
 # write file
 # search for empty sector in sector table
