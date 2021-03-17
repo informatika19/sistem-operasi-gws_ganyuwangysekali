@@ -70,7 +70,6 @@ void ln(char* args, char parentIndex)
 		if(dir[(errno << 4) + 2] == 0) break;
 		errno++;
 	}
-	printInt(errno);
 	if(errno > 0x3F)
 	{
 		// tidak ada dir kosong
@@ -81,8 +80,6 @@ void ln(char* args, char parentIndex)
 	if(isSoft){
 		// softlink
 		dir[(errno<<4)+1] = 0x20+inputFileIdx;
-
-		printHex(inputFileIdx);
 	}
 	else{
 		// hardlink
