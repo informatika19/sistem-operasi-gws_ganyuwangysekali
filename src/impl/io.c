@@ -47,7 +47,7 @@ void readString(char *string){
 				printString("\b");
 			}
 		}
-		if(current == 0){ // non-printable, extra keys
+		else if(current == 0){ // non-printable, extra keys
 			string[length++] = current;
 			string[length++] = (char)(c>>8);
 			break;
