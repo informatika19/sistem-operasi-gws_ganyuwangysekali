@@ -172,13 +172,20 @@ char getPathIndex(char* path, char parentIndex)
 	while(*path != 0)
 	{ 
 		// let's parse the path until the very end
-		if(*path == '.' && (*(path+1) == '/' || *(path+1) == 0)) path += 1 + (*(path+1) == '/'); // './'
-		if(*path == '/') path++; // '/'
+		if(*path == '.' && (*(path+1) == '/' || *(path+1) == 0)){ // './'
+			path += 1 + (*(path+1) == '/');
+			continue;
+		}
+		if(*path == '/'){ // '/'
+			path++;
+			continue;
+		}
 		if(*path == '.' && *(path+1) == '.' && (*(path+2) == '/' || *(path+2) == 0)) { // '../'
 			if(parentIndex != 0xFF){
 				parentIndex = dir[parentIndex<<4];
 			}
 			path += 2 + (*(path+2) == '/');
+			continue;
 		}
 		if(*path == 0) break;
 		i = 0;
