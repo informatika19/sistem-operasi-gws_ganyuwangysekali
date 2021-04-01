@@ -35,8 +35,8 @@ int pow(int a, int b){
 	if(a == 0) return 0;
 	if(b == 0) return 1;
 	if(b == 1) return a;
-	if(mod(b, 2) == 1) return pow(a, b/2) * pow(a, b-(b/2));
-	return pow(a, b/2) * pow(a, b/2);
+	int temp = pow(a, b/2);
+	return temp * temp * pow(a, mod(b, 2));
 }
 
 int abs(int x){ return x < 0 ? -x : x; }

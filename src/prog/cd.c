@@ -42,12 +42,11 @@ char chdir(char* inputPath, int* result, char parentIndex)
 	*result = 0;
 	return pathIndex;
 }
-
 /*
 int main(int argc, char *argv[])
 {
 	int errno = 0;
-	cwdIdx = chdir(argv[1], &errno, cwdIdx);
+	cwd = chdir(argv[1], &errno, cwd;
 	
 	if(errno == 1)
 	{

@@ -32,10 +32,11 @@ void ls(char *arg, char parentIndex)
 		}
 	}
 }
-
-// int main(int argc, char *argv[])
-// {
-	// char *content;
-	// ls(content, cwdIdx);
-	// printString(content);
-// }
+/*
+int main(int argc, char *argv[])
+{
+	char *content;
+	ls(content, cwdIdx);
+	printString(content);
+}
+*/
