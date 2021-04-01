@@ -7,7 +7,7 @@ char chdir(char* inputPath, int* result, char parentIndex); // cd
 void ls(char* argv, char parentIndex); // ls
 
 void ln(char* args, char parentIndex);
-void removebyIndex(char index, char* files[512], char* sectors[512], char* maps[512]);
+void removebyIndex(char index, char** files, char** sectors, char** maps);
 void remove(int argc, char* args[], char parentIndex);
 void copy(int argc, char* args[], char parentIndex);
 #endif
