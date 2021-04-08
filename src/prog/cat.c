@@ -2,24 +2,29 @@
 #include "stds.h"
 #include "file.h"
 
-void cat(char *inputPath, char parentIndex)
+void cat(int argc, char* args[], char parentIndex)
 {
 	char content[8192];
 	int errno;
-	while(*(inputPath) == ' ') inputPath++;
-	if(*inputPath == 0){
-		printString("Usage: cat <filename>\n");
+	if(argc == 0){
+		// interaksinya di ubuntu adalah readString lalu printString
+		// sampai diinterupsi, tapi tidak akan diimplementasi
 		return;
 	}
-	readFile(content, inputPath, &errno, parentIndex);
 
-	if(errno == -1) {// file not found
+	// cat [file]
+	readFile(content, args[1], &errno, parentIndex);
+
+	if(errno == -1) // file not found
+	{
 		printString("No such file or directory\n");
 	}
-	else if(errno == -2){
+	else if(errno == -2)
+	{
 		printString("Is a directory\n");
 	}
-	else{
+	else
+	{
 		printString(content);
 		printString("\n");
 	}
@@ -28,6 +33,6 @@ void cat(char *inputPath, char parentIndex)
 /*
 int main(int argc, char *argv[])
 {
-	cat(argv[1], cwd dari shell);
+	cat(argc, argv, cwd dari shell);
 }
 */

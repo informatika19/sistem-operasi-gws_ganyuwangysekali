@@ -60,7 +60,7 @@ void remove(int argc, char* args[], char parentIndex)
         printString("missing operand");
         return;
     }
-    char files[1024], map[512], sector[512];
+    char files[1024], map[512], sectors[512];
 
     int i, j, flagIdx;
     unsigned char isRecursive = 0;
@@ -85,7 +85,7 @@ void remove(int argc, char* args[], char parentIndex)
     readSector(map, 0x100);
     readSector(files, 0x101);
     readSector(files + 512, 0x102);
-    readSector(sector, 0x103);
+    readSector(sectors, 0x103);
 
     // argc != 2 atau !isRecursive
     if(isRecursive) // argc > 2
@@ -95,7 +95,7 @@ void remove(int argc, char* args[], char parentIndex)
             if(i == flagIdx) continue;
 
             char idx = getPathIndex(args[i], parentIndex);
-            removebyIndex(idx, &files, &sector, &map);
+            removebyIndex(idx, &files, &sectors, &map);
         }
     }
     else // gak rekursif
@@ -127,7 +127,7 @@ void remove(int argc, char* args[], char parentIndex)
             // pasti sebuah file
             for(j = 0; j < 16; j++)
             {
-                sector[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
+                sectors[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
                 map[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
             }
             for(j = 0; j < 16; j++)
@@ -136,6 +136,10 @@ void remove(int argc, char* args[], char parentIndex)
             }
         }
     }
+    writeSector(map, 0x100);
+    writeSector(files, 0x101);
+    writeSector(files + 512, 0x102);
+    writeSector(sectors, 0x103);
 }
 /*
 int main(int argc, char* args[])

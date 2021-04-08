@@ -2,18 +2,18 @@
 #include "stds.h"
 #include "file.h"
 
-// parentIndex disimpan di cwdIdx
-char chdir(char* inputPath, int* result, char parentIndex)
+char chdir(int argc, char* args[], int* result, char parentIndex)
 {
-	char pathIndex, dir[1024];
-	while(*inputPath == ' ') inputPath++;
-	if(*inputPath == 0)
+	// cd
+	if(argc == 1)
 	{
 		*result = 0;
 		return 0xFF;
 	}
+
+	char pathIndex, files[1024];
 	
-	pathIndex = getPathIndex(inputPath, parentIndex);
+	pathIndex = getPathIndex(args[1], parentIndex);
 
 	if(pathIndex == 0xFE)
 	{
@@ -26,14 +26,17 @@ char chdir(char* inputPath, int* result, char parentIndex)
 		return 0xFF;
 	}
 	
-	readSector(dir, 0x101);
-	readSector(dir + 512, 0x102);
+	readSector(files, 0x101);
+	readSector(files + 512, 0x102);
 	
 	// kasus softlink
-	if(dir[(pathIndex<<4)+1] > 0x1F && dir[(pathIndex<<4)+1] != 0xFF) pathIndex = dir[(pathIndex << 4) + 1] - 0x20;
+	while (files[(pathIndex << 4) + 1] >= 0x20 && files[(pathIndex << 4) + 1] != 0xFF)
+	{
+		pathIndex = files[(pathIndex << 4) + 1] - 0x20;
+	}
 	
 	// sectornya itu sector file
-	if ((dir[(pathIndex << 4) + 1] <= 0x1F) && (dir[(pathIndex << 4) + 1] >= 0x00))
+	if ((files[(pathIndex << 4) + 1] <= 0x1F) && (files[(pathIndex << 4) + 1] >= 0x00))
 	{
 		*result = 1;
 		return parentIndex;
@@ -42,11 +45,12 @@ char chdir(char* inputPath, int* result, char parentIndex)
 	*result = 0;
 	return pathIndex;
 }
+
 /*
 int main(int argc, char *argv[])
 {
 	int errno = 0;
-	cwd = chdir(argv[1], &errno, cwd;
+	cwd = chdir(argc, argv, &errno, cwd);
 	
 	if(errno == 1)
 	{
@@ -56,7 +60,6 @@ int main(int argc, char *argv[])
 	{
 		printString("No such file or directory");
 	}
-	
 	return errno;
 }
 */
