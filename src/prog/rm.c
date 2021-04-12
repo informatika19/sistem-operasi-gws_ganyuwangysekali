@@ -7,15 +7,15 @@
 // menangani kasus rekursif
 void removebyIndex(char index, char** files, char** sectors, char** maps)
 {
+    int i;
+    char P = (*files)[(index << 4)];
+    char S = (*files)[(index << 4) + 1];
     if(!(index >= 0x00 && index < 0x40))
     {
         printString("No such file or directory");
         return;
     }
 
-    int i;
-    char P = (*files)[(index << 4)];
-    char S = (*files)[(index << 4) + 1];
 
     if(S >= 0x20) // kasus softlink
     {
@@ -54,16 +54,18 @@ void removebyIndex(char index, char** files, char** sectors, char** maps)
 // idealnya argc >= 3
 void remove(int argc, char* args[], char parentIndex)
 {
+    char files[1024], map[512], sectors[512];
+
+    int i, j, flagIdx;
+    unsigned char isRecursive = 0;
+    char* errorMessage;
+    char idx;
     // rm
     if(argc == 1)
     {
         printString("missing operand");
         return;
     }
-    char files[1024], map[512], sectors[512];
-
-    int i, j, flagIdx;
-    unsigned char isRecursive = 0;
 
     // args[0] pasti "rm"
     for(i = 1; i < argc; i++)
@@ -94,16 +96,15 @@ void remove(int argc, char* args[], char parentIndex)
         {
             if(i == flagIdx) continue;
 
-            char idx = getPathIndex(args[i], parentIndex);
+            getPathIndex(args[i], parentIndex);
             removebyIndex(idx, &files, &sectors, &map);
         }
     }
     else // gak rekursif
     {
-        char* errorMessage;
         for(i = 1; i < argc; i++)
         {
-            char idx = getPathIndex(args[i], parentIndex);
+            getPathIndex(args[i], parentIndex);
 
             // is a folder
             if(files[(idx << 4) + 1] == 0xFF)

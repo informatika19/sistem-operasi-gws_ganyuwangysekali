@@ -32,10 +32,11 @@ int div(int a, int b)
 /*** IMPLEMENTASI DIV DAN MOD ***/
 
 int pow(int a, int b){
+	int temp;
 	if(a == 0) return 0;
 	if(b == 0) return 1;
 	if(b == 1) return a;
-	int temp = pow(a, b/2);
+	temp = pow(a, b/2);
 	return temp * temp * pow(a, mod(b, 2));
 }
 

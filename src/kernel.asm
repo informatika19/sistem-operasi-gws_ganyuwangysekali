@@ -7,9 +7,8 @@
 global _putInMemory
 global _interrupt
 global _makeInterrupt21
+global _launchProgram
 extern _handleInterrupt21
-
-global _logo
 
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:
@@ -98,5 +97,3 @@ _launchProgram:
     mov bp,0xfff0
 
 jump:    jmp 0x0000:0x0000
-
-_logo: incbin "logo.bin"

@@ -4,14 +4,13 @@
 
 char chdir(int argc, char* args[], int* result, char parentIndex)
 {
+	char pathIndex, files[1024];
 	// cd
 	if(argc == 1)
 	{
 		*result = 0;
 		return 0xFF;
 	}
-
-	char pathIndex, files[1024];
 	
 	pathIndex = getPathIndex(args[1], parentIndex);
 

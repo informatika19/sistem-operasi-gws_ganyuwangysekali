@@ -12,7 +12,7 @@ out=out/
 incl=$(SRC)/headers/
 INCL_FLAG=-I$(incl)
 
-KSIZE=60
+KSIZE=16
 
 map_img=$(out)/map.img
 files_img=$(out)/files.img
@@ -33,13 +33,14 @@ PROGS=$(patsubst $(PROGS_FOLDER)/%.c, $(out)/prog_%.o, $(wildcard $(PROGS_FOLDER
 
 all: $(sys_img)
 
-$(sys_img): $(out) $(bootloader) $(kernel) $(map_img) $(sectors_img) $(files_img)
+$(sys_img): $(out) $(bootloader) $(kernel) $(map_img) $(sectors_img) $(files_img) $(boot_logo)
 	dd if=/dev/zero of=$@ bs=512 count=2880
 	dd if=$(bootloader) of=$@ bs=512 conv=notrunc count=1
 	dd if=$(kernel) of=$@ bs=512 conv=notrunc seek=1
 	dd if=$(map_img) of=$@ bs=512 count=1 seek=256 conv=notrunc
 	dd if=$(files_img) of=$@ bs=512 count=2 seek=257 conv=notrunc
 	dd if=$(sectors_img) of=$@ bs=512 count=1 seek=259 conv=notrunc
+	python tools/loadfile.py $@ $(boot_logo) "logo"
 
 $(out)/impl_%.o: $(IMPL_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
@@ -70,10 +71,10 @@ $(bootloader): $(bootloader_asm)
 $(kernel_o): $(kernel_c)
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
-$(kernel_asm_o): $(kernel_asm) $(out) $(boot_logo)
+$(kernel_asm_o): $(kernel_asm) $(out)
 	nasm -i $(out) -f as86 $< -o $@
 
-$(kernel): $(kernel_o) $(IMPL) $(PROGS) $(kernel_asm_o)
+$(kernel): $(kernel_o) $(IMPL) $(kernel_asm_o)
 	ld86 -o $@ -d $^
 
 run: $(sys_img)

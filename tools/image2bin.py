@@ -13,14 +13,15 @@ outfile = sys.argv[2]
 
 img = Image.open(infile).convert()
 
-# resize to fit 300*220
+# resize to fit small size
+# small image = small size
 width = img.size[0]
 height = img.size[1]
 if(height > width):
-  height = 150
+  height = 60
   width = int(img.size[0]*height/img.size[1])
 else:
-  width = 200 #300/2?
+  width = 100
   height = int(img.size[1]*width/img.size[0])
 
 resized = img.resize((width, height))

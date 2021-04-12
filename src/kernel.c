@@ -6,31 +6,34 @@
 #include "file.h"
 #include "io.h"
 
-extern unsigned char logo[];
-
 int col = 0, row = 0;
+
+void executeProgram();
 
 int main ()
 {
 	char buffer[bufsize];
 	char sectorBuf[512]; // 1 sektor = 512 byte
 	int x, y;
-	int width = logo[0];
-	int height = logo[1]-1;
-	int startx = (VGA_WIDTH - width)>>1;
-	int starty = (VGA_HEIGHT - height)>>1;
+	int width, height, startx, starty;
+	char logo[512<<4];
 	// set graphics mode
 	// http://www.oldlinux.org/Linux.old/docs/interrupts/int-html/rb-0069.htm
 	// 13h = VGA Graphics (320x200, 256 colors)
 	interrupt(0x10, 0x0013, 0x0000, 0x0000, 0x0000);
 	// render graphics
+	makeInterrupt21();
+	interrupt(0x21, 0xFF04, logo, "logo", &x);
+	width = logo[0];
+	height = logo[1]-1;
+	startx = (VGA_WIDTH - width)>>1;
+	starty = (VGA_HEIGHT - height)>>1;
 	for(y = height; y > 0; y--){
 		for(x = width; x > 0; x--){
 			putInMemory(VGA_MEMORY_BASE, (y+starty) * VGA_WIDTH + (x+startx), logo[(y*width)+x]);
 		}
 	}
 
-	makeInterrupt21();
 
 	printString("Press any key to continue...");
 	interrupt(0x16, 0, 0, 0, 0);
@@ -39,8 +42,6 @@ int main ()
 	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
 	row = 0;
 	col = 0;
-
-	runShell();
 }
 
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
@@ -82,4 +83,23 @@ void clearScreen(){
 			putInMemory(VGA_MEMORY_BASE, VGA_WIDTH*y + x, 0);
 		}
 	}
+}
+
+void executeProgram(char *filename, int segment, int *success, char parentIndex) {
+    // Buat buffer
+    int isSuccess;
+    char fileBuffer[512 * 16];
+    // Buka file dengan readFile
+    readFile(&fileBuffer, filename, &isSuccess, parentIndex);
+    // If success, salin dengan putInMemory
+    if (isSuccess) {
+        // launchProgram
+        int i = 0;
+        for (i = 0; i < 512*16; i++) {
+            putInMemory(segment, i, fileBuffer[i]);
+        }
+        launchProgram(segment);
+    } else {
+        interrupt(0x21, 0, "File not found!", 0,0);
+    }
 }

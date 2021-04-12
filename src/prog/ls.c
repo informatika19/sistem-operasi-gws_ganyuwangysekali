@@ -4,6 +4,8 @@
 
 void ls(int argc, char* args[], char* buffer, int* result, char parentIndex)
 {
+	char files[1024];
+	int i;
 	// ls
 	if(argc == 1)
 	{
@@ -17,7 +19,6 @@ void ls(int argc, char* args[], char* buffer, int* result, char parentIndex)
 
 	if(*result == 2) return; // No such file or directory
 
-	char files[1024];
 	readSector(files, 0x101);
 	readSector(files + 512, 0x102);
 
@@ -30,7 +31,6 @@ void ls(int argc, char* args[], char* buffer, int* result, char parentIndex)
 	}
 
 	// *result == 0
-	int i;
 	for(i = 0; i <= 0x3F; i++)
 	{
 		// parent dari isifile = direktori sekarang
