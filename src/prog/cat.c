@@ -1,6 +1,6 @@
-#include "progs.h"
-#include "stds.h"
-#include "file.h"
+#include "basicio.h"
+
+#include "fileio.h"
 
 void cat(int argc, char* args[], char parentIndex)
 {
@@ -17,22 +17,23 @@ void cat(int argc, char* args[], char parentIndex)
 
 	if(errno == -1) // file not found
 	{
-		printString("No such file or directory\n");
+		print("No such file or directory\n");
 	}
 	else if(errno == -2)
 	{
-		printString("Is a directory\n");
+		print("Is a directory\n");
 	}
 	else
 	{
-		printString(content);
-		printString("\n");
+		print(content);
+		print("\n");
 	}
 	return;
 }
-/*
-int main(int argc, char *argv[])
+
+int main()
 {
-	cat(argc, argv, cwd dari shell);
+	int argc;
+	char* argv;
+	cat(argc, argv, 0xFF);
 }
-*/

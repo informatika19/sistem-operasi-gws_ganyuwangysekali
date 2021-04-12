@@ -1,4 +1,3 @@
-#include "progs.h"
 #include "stds.h"
 #include "file.h"
 #include "shell.h"
@@ -91,6 +90,9 @@ void ln(char* args, char parentIndex)
 	writeSector(dir, 0x101);
 	writeSector(dir + 512, 0x102);
 	return;
+}
+
+int main(){
 }
 
 /*

@@ -1,6 +1,6 @@
-#include "progs.h"
 #include "stds.h"
-#include "file.h"
+
+#include "fileio.h"
 
 char chdir(int argc, char* args[], int* result, char parentIndex)
 {
@@ -45,10 +45,10 @@ char chdir(int argc, char* args[], int* result, char parentIndex)
 	return pathIndex;
 }
 
-/*
-int main(int argc, char *argv[])
+int main()
 {
 	int errno = 0;
+	char cwd;
 	cwd = chdir(argc, argv, &errno, cwd);
 	
 	if(errno == 1)
@@ -61,4 +61,3 @@ int main(int argc, char *argv[])
 	}
 	return errno;
 }
-*/

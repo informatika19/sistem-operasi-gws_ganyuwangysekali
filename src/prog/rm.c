@@ -1,4 +1,3 @@
-#include "progs.h"
 #include "stds.h"
 #include "string.h"
 #include "buffer.h"
@@ -142,10 +141,11 @@ void remove(int argc, char* args[], char parentIndex)
     writeSector(files + 512, 0x102);
     writeSector(sectors, 0x103);
 }
-/*
-int main(int argc, char* args[])
+
+int main()
 {
     // TODO : CWD DARI SHELL
-    remove(argc, args, cwd dari shell);
+    int argc;
+    char* args;
+    remove(argc, args, 0xFF);
 }
-*/

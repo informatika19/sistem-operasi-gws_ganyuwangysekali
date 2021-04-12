@@ -6,7 +6,6 @@
 #include "file.h"
 #include "io.h"
 
-int col = 0, row = 0;
 
 void executeProgram();
 
@@ -36,12 +35,12 @@ int main ()
 
 
 	printString("Press any key to continue...");
+	setCursorPos(0, 0);
 	interrupt(0x16, 0, 0, 0, 0);
 	
 	// set mode text 
 	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
-	row = 0;
-	col = 0;
+	interrupt(0x21, 0xFF06, "/bin/shell", 0x2000, &x);
 }
 
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {

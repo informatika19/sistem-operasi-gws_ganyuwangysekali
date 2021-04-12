@@ -1,7 +1,13 @@
 #include "io.h"
 #include "kernel.h"
 #include "math.h"
-extern int row, col;
+
+int col = 0, row = 0;
+
+void setCursorPos(int x, int y){
+	col = x;
+	row = y;
+}
 
 void printString(char *string){
 	int i;
@@ -64,41 +70,4 @@ void readString(char *string){
 		string[length] = '\n';
 		printString(string+(length++));
 	}
-}
-
-void printInt(int x){
-  char current[2];
-  int y, i;
-  clear(current, 2);
-  if(x < 0) printString("-");
-  x = abs(x);
-  while(x > 9){
-    y = x;
-    i = 0;
-    while(y > 9) { y/=10; i++; }
-    current[0] = '0'+(y&0xFF);
-    printString(current);
-    x -= y*(pow(10,i));
-  }
-  current[0] = '0'+(x&0xFF);
-  printString(current);
-}
-
-void printHex(unsigned int x){
-  char current[2];
-  unsigned int y, i;
-	current[1] = 0;
-  printString("0x");
-  while(x > 0xF){
-    y = x;
-    i = 0;
-    while(y > 0xF) { y /= 0x10; i++; }
-    y &= 0xF;
-    current[0] = ( y < 10 ? '0' : 'A'-10 )+(y);
-    printString(current);
-    x -= y*pow(0x10, i);
-  }
-  x &= 0xF;
-  current[0] = ( x < 10 ? '0' : 'A'-10 )+(x);
-  printString(current);
 }

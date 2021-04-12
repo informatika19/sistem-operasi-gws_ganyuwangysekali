@@ -9,8 +9,9 @@ boot_logo_in=$(SRC)/boot_logo
 
 out=out/
 
-incl=$(SRC)/headers/
-INCL_FLAG=-I$(incl)
+libs=$(SRC)/lib/headers/
+incl=$(SRC)/headers/ $(libs)
+INCL_FLAG=$(patsubst %, -I%, $(incl))
 
 KSIZE=16
 
@@ -26,10 +27,12 @@ kernel=$(out)/kernel
 boot_logo=$(out)/logo.bin
 
 IMPL_FOLDER=$(SRC)/impl
+LIB_FOLDER=$(SRC)/lib/impl
 PROGS_FOLDER=$(SRC)/prog
 
 IMPL=$(patsubst $(IMPL_FOLDER)/%.c, $(out)/impl_%.o, $(wildcard $(IMPL_FOLDER)/*.c))
-PROGS=$(patsubst $(PROGS_FOLDER)/%.c, $(out)/prog_%.o, $(wildcard $(PROGS_FOLDER)/*.c))
+LIB=$(patsubst $(LIB_FOLDER)/%.c, $(out)/lib_%.o, $(wildcard $(LIB_FOLDER)/*.c))
+PROGS=$(patsubst $(PROGS_FOLDER)/%.c, $(out)/prog_%, $(wildcard $(PROGS_FOLDER)/*.c))
 
 all: $(sys_img)
 
@@ -42,11 +45,21 @@ $(sys_img): $(out) $(bootloader) $(kernel) $(map_img) $(sectors_img) $(files_img
 	dd if=$(sectors_img) of=$@ bs=512 count=1 seek=259 conv=notrunc
 	python tools/loadfile.py $@ $(boot_logo) "logo"
 
+$(out)/lib_%.o: $(LIB_FOLDER)/%.c
+	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
+
 $(out)/impl_%.o: $(IMPL_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
-$(out)/prog_%.o: $(PROGS_FOLDER)/%.c
-	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
+$(out)/progu_%.o: $(PROGS_FOLDER)/%.c
+	bcc $(CFLAGS) -I$(libs) -o $@ $<
+
+$(out)/lib_intr.o: $(SRC)/lib.asm
+	nasm -f as86 $< -o $@
+
+$(out)/prog_%: $(out)/progu_%.o $(LIB) $(out)/lib_intr.o
+	ld86 -o $@ -d $^
+	python tools/loadfile.py $(sys_img) $@ $(addprefix /bin/,$(patsubst $(out)/prog_%, %, $@))
 
 $(out):
 	mkdir $(out)
@@ -74,10 +87,10 @@ $(kernel_o): $(kernel_c)
 $(kernel_asm_o): $(kernel_asm) $(out)
 	nasm -i $(out) -f as86 $< -o $@
 
-$(kernel): $(kernel_o) $(IMPL) $(kernel_asm_o)
+$(kernel): $(kernel_o) $(IMPL) $(LIB) $(kernel_asm_o)
 	ld86 -o $@ -d $^
 
-run: $(sys_img)
+run: $(sys_img) $(PROGS)
 	$(BOCHS) -f if2230.config
 
 clean:

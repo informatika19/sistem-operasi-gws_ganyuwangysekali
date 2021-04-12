@@ -1,6 +1,5 @@
 #include "shell.h"
 #include "file.h"
-#include "progs.h"
 
 void runShell() {
     unsigned char arrowClick;
@@ -163,3 +162,5 @@ void printPrompt(char* prompt, char dirIdx){
         }
     }
 }
+
+int main(){}

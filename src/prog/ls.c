@@ -1,4 +1,3 @@
-#include "progs.h"
 #include "string.h"
 #include "file.h"
 
@@ -41,8 +40,8 @@ void ls(int argc, char* args[], char* buffer, int* result, char parentIndex)
 		}
 	}
 }
-/*
-int main(int argc, char *argv[])
+
+int main()
 {
 	char *content;
 	int errno;
@@ -57,4 +56,3 @@ int main(int argc, char *argv[])
 		printString("No such file or directory");
 	}
 }
-*/
