@@ -1,5 +1,4 @@
 #include "basicio.h"
-
 #include "fileio.h"
 
 void cat(char *inputPath, char parentIndex)
@@ -8,23 +7,25 @@ void cat(char *inputPath, char parentIndex)
 	int errno;
 	while(*(inputPath) == ' ') inputPath++;
 	if(*inputPath == 0){
-		printString("Usage: cat <filename>\n");
+		interrupt(0x21, 0, "Usage: cat <filename>\n", 0, 0);
 		return;
 	}
-	readFile(content, inputPath, &errno, parentIndex);
+	interrupt(0x21, (parentIndex << 8) | 0x04, content, inputPath, &errno);
+//	readFile(BX, CX, DX, AH);
+//	readFile(content, inputPath, &errno, parentIndex);
 
 	if(errno == -1) // file not found
 	{
-		printString("No such file or directory\n");
+		interrupt(0x21, 0, "No such file or directory\n", 0, 0);
 	}
 	else if(errno == -2)
 	{
-		printString("Is a directory\n");
+		interrupt(0x21, 0, "Is a directory\n", 0, 0);
 	}
 	else
 	{
-		printString(content);
-		printString("\n");
+		interrupt(0x21, 0, content, 0, 0);
+		interrupt(0x21, 0, "\n", 0, 0);
 	}
 	return;
 }

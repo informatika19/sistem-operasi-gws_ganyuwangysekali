@@ -11,7 +11,7 @@ void removebyIndex(char index, char** files, char** sectors, char** maps)
     char S = (*files)[(index << 4) + 1];
     if(!(index >= 0x00 && index < 0x40))
     {
-        printString("No such file or directory");
+        interrupt(0x21, 0, "No such file or directory", 0, 0);
         return;
     }
 
@@ -62,7 +62,7 @@ void remove(int argc, char* args[], char parentIndex)
     // rm
     if(argc == 1)
     {
-        printString("missing operand");
+        interrupt(0x21, 0, "missing operand", 0, 0);
         return;
     }
 
@@ -79,15 +79,18 @@ void remove(int argc, char* args[], char parentIndex)
 
     if(argc == 2 && isRecursive)
     {
-        printString("missing operand"); // pesan error pas dicoba di ubuntu
+        interrupt(0x21, 0, "missing operand", 0, 0); // pesan error pas dicoba di ubuntu
         return;
     }
 
-    readSector(map, 0x100);
-    readSector(files, 0x101);
-    readSector(files + 512, 0x102);
-    readSector(sectors, 0x103);
-
+//    readSector(map, 0x100);
+//    readSector(files, 0x101);
+//    readSector(files + 512, 0x102);
+//    readSector(sectors, 0x103);
+    interrupt(0x21, 0x0002, map, 0x100, 0);
+    interrupt(0x21, 0x0002, files, 0x101, 0);
+    interrupt(0x21, 0x0002, files + 512, 0x102, 0);
+    interrupt(0x21, 0x0002, sectors, 0x103, 0);
     // argc != 2 atau !isRecursive
     if(isRecursive) // argc > 2
     {
@@ -110,7 +113,7 @@ void remove(int argc, char* args[], char parentIndex)
             {
                 strncpy(errorMessage, args[i], strlen(args[i]));
                 strncat(errorMessage, "Is a directory\n", 15);
-                printString(errorMessage);
+                interrupt(0x21, 0, errorMessage, 0, 0);
                 continue;
             }
 
@@ -136,16 +139,16 @@ void remove(int argc, char* args[], char parentIndex)
             }
         }
     }
-    writeSector(map, 0x100);
-    writeSector(files, 0x101);
-    writeSector(files + 512, 0x102);
-    writeSector(sectors, 0x103);
+//    writeSector(map, 0x100);
+//    writeSector(files, 0x101);
+//    writeSector(files + 512, 0x102);
+//    writeSector(sectors, 0x103);
+    interrupt(0x21, 0x0003, map, 0x100, 0);
+    interrupt(0x21, 0x0003, files, 0x101, 0);
+    interrupt(0x21, 0x0003, files + 512, 0x102, 0);
+    interrupt(0x21, 0x0003, sectors, 0x103, 0);
 }
 
 int main()
 {
-    // TODO : CWD DARI SHELL
-    int argc;
-    char* args;
-    remove(argc, args, 0xFF);
 }
