@@ -1,4 +1,4 @@
-#include "stds.h"
+#include "basicio.h"
 #include "fileio.h"
 
 char chdir(char* inputPath, int* result, char parentIndex)
@@ -11,7 +11,7 @@ char chdir(char* inputPath, int* result, char parentIndex)
 		return 0xFF;
 	}
 	
-	pathIndex = getPathIndex(inputPath, parentIndex);
+	pathIndex = getParent(inputPath, parentIndex);
 
 	if(pathIndex == 0xFE)
 	{
@@ -24,10 +24,8 @@ char chdir(char* inputPath, int* result, char parentIndex)
 		return 0xFF;
 	}
 	
-//	readSector(dir, 0x101);
-//	readSector(dir + 512, 0x102);
-	interrupt(0x21, 0x0002, dir, 0x101, 0);
-	interrupt(0x21, 0x0002, dir + 512, 0x102);
+	lib_readSector(dir, 0x101);
+	lib_readSector(dir + 512, 0x102);
 	
 	// kasus softlink
 	if(dir[(pathIndex << 4) + 1] > 0x1F && dir[(pathIndex << 4)+1] != 0xFF) pathIndex = dir[(pathIndex << 4) + 1] - 0x20;
@@ -51,11 +49,11 @@ int main()
 	
 	if(errno == 1)
 	{
-		interrupt(0x21, 0, "Not a directory", 0, 0);
+		print("Not a directory");
 	}
 	else if(errno == 2)
 	{
-		interrupt(0x21, 0, "No such file or directory", 0, 0);
+		print("No such file or directory");
 	}
 	return errno;
 }
