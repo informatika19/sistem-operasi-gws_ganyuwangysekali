@@ -208,7 +208,6 @@ char getPathIndex(char* path, char parentIndex)
 		if(i == 0x40 || dir[(i<<4)+2] == 0) return 0xFE; // path not in dir
 		if(dir[(i<<4)+1] > 0x1F && dir[(i<<4)+1] != 0xFF) i = (dir[(i<<4)+1]-0x20); // dereference symlink
 		parentIndex = i;
-		if(dir[(parentIndex << 4) + 1] != 0xFF) 0xFE; // path not valid
 	}
 	return parentIndex;
 }
