@@ -1,5 +1,4 @@
 #include "string.h"
-#include "file.h"
 
 void ls(char *arg, char parentIndex)
 {

@@ -1,6 +1,4 @@
-#include "stds.h"
-#include "file.h"
-#include "shell.h"
+#include "string.h"
 
 void ln(char* args, char parentIndex)
 {
@@ -19,8 +17,8 @@ void ln(char* args, char parentIndex)
 		while(*(args+errno) != ' ' && *(args+errno) != 0) errno++;
 		strncpy(dir, args, errno);
 		if(strncmp(dir, "-s", 2) == 0) isSoft = 1;
-		else if(strlen(inputPath) == 0) strncpy(inputPath, dir, 14);
-		else if(strlen(outputPath) == 0) strncpy(outputPath, dir, 14);
+		else if(strlen(inputPath) == 0) strncpy(inputPath, dir, 128);
+		else if(strlen(outputPath) == 0) strncpy(outputPath, dir, 128);
 		else{
 			errno = -1;
 			break;

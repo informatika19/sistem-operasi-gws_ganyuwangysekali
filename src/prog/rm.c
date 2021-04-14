@@ -1,9 +1,7 @@
 #include "stds.h"
 #include "string.h"
 #include "buffer.h"
-#include "file.h"
 
-// menangani kasus rekursif
 void removebyIndex(char index, char** files, char** sectors, char** maps)
 {
     int i;

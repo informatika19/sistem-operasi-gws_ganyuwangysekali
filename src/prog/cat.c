@@ -1,6 +1,3 @@
-#include "basicio.h"
-#include "fileio.h"
-
 void cat(char *inputPath, char parentIndex)
 {
 	char content[8192];
