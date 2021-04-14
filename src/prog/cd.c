@@ -2,17 +2,17 @@
 
 #include "fileio.h"
 
-char chdir(int argc, char* args[], int* result, char parentIndex)
+char chdir(char* inputPath, int* result, char parentIndex)
 {
-	char pathIndex, files[1024];
-	// cd
-	if(argc == 1)
+	char pathIndex, dir[1024];
+	while(*inputPath == ' ') inputPath++;
+	if(*inputPath == 0)
 	{
 		*result = 0;
 		return 0xFF;
 	}
 	
-	pathIndex = getPathIndex(args[1], parentIndex);
+	pathIndex = getPathIndex(inputPath, parentIndex);
 
 	if(pathIndex == 0xFE)
 	{
@@ -25,17 +25,14 @@ char chdir(int argc, char* args[], int* result, char parentIndex)
 		return 0xFF;
 	}
 	
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
+	readSector(dir, 0x101);
+	readSector(dir + 512, 0x102);
 	
 	// kasus softlink
-	while (files[(pathIndex << 4) + 1] >= 0x20 && files[(pathIndex << 4) + 1] != 0xFF)
-	{
-		pathIndex = files[(pathIndex << 4) + 1] - 0x20;
-	}
+	if(dir[(pathIndex << 4)+1] > 0x1F && dir[(pathIndex << 4)+1] != 0xFF) pathIndex = dir[(pathIndex << 4) + 1] - 0x20;
 	
 	// sectornya itu sector file
-	if ((files[(pathIndex << 4) + 1] <= 0x1F) && (files[(pathIndex << 4) + 1] >= 0x00))
+	if ((dir[(pathIndex << 4) + 1] <= 0x1F) && (dir[(pathIndex << 4) + 1] >= 0x00))
 	{
 		*result = 1;
 		return parentIndex;
@@ -49,7 +46,7 @@ int main()
 {
 	int errno = 0;
 	char cwd;
-	cwd = chdir(argc, argv, &errno, cwd);
+	// cwd = chdir(argc, argv, &errno, cwd);
 	
 	if(errno == 1)
 	{

@@ -1,13 +1,13 @@
 #ifndef _PROGS_H
 #define _PROGS_H
 
-void cat(int argc, char* args[], char parentIndex);
+void cat(char *inputPath, char parentIndex);
 
 // cd [path]
-char chdir(int argc, char* args[], int* result, char parentIndex);
+char chdir(char* inputPath, int* result, char parentIndex); 
 
 // ls [path]
-void ls(int argc, char* args[], char* buffer, int* result, char parentIndex);
+void ls(char* argv, char parentIndex);
 
 // ln [path1] [path2]
 // ln [path1] [flags] [path2]

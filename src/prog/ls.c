@@ -1,58 +1,36 @@
 #include "string.h"
 #include "file.h"
 
-void ls(int argc, char* args[], char* buffer, int* result, char parentIndex)
+void ls(char *arg, char parentIndex)
 {
-	char files[1024];
+	char dir[1024];
+	char current[16];
 	int i;
-	// ls
-	if(argc == 1)
+	readSector(dir, 0x101);
+	readSector(dir + 512, 0x102);
+
+	while(*arg == ' ') arg++;
+	if(*arg != 0) parentIndex = getPathIndex(arg, parentIndex);
+
+	if(parentIndex != 0xFF && dir[(parentIndex << 4) + 1] > 0x20 && dir[(parentIndex << 4)+1] != 0xFF)
 	{
-		*result = 0;
+		parentIndex = dir[(parentIndex << 4) + 1];
 	}
-	else // ls [path]
-	{
-		// seolah-olah cd [path]
-		parentIndex = chdir(2, args, result, parentIndex);
-	}
-
-	if(*result == 2) return; // No such file or directory
-
-	readSector(files, 0x101);
-	readSector(files + 512, 0x102);
-
-	if(*result == 1) // ls [file] = file
-	{
-		parentIndex = getPathIndex(args[1], parentIndex);
-		strncat(buffer, files + (parentIndex << 4) + 2, 14);
-		strncat(buffer, "\n", 1);
-		return;
-	}
-
-	// *result == 0
+	
 	for(i = 0; i <= 0x3F; i++)
 	{
 		// parent dari isifile = direktori sekarang
-		if (files[i << 4] == parentIndex && files[(i << 4) + 2] != 0)
+		if (dir[i << 4] == parentIndex && dir[(i << 4) + 2] != 0)
 		{
-			strncat(buffer, files + (i << 4) + 2, 14);
-			strncat(buffer, "\n", 1);
+			clear(current, 16);
+			strncpy(current, dir+(i << 4) + 2, 14);
+			current[strlen(current)] = '\n';
+			printString(current);
 		}
 	}
 }
 
 int main()
 {
-	char *content;
-	int errno;
-	ls(argc, argv, content, &result, cwdIdx);
 
-	if(result == 1 || result == 0)
-	{
-		printString(content);
-	}
-	else
-	{
-		printString("No such file or directory");
-	}
 }

@@ -2,31 +2,29 @@
 
 #include "fileio.h"
 
-void cat(int argc, char* args[], char parentIndex)
+void cat(char *inputPath, char parentIndex)
 {
 	char content[8192];
 	int errno;
-	if(argc == 0){
-		// interaksinya di ubuntu adalah readString lalu printString
-		// sampai diinterupsi, tapi tidak akan diimplementasi
+	while(*(inputPath) == ' ') inputPath++;
+	if(*inputPath == 0){
+		printString("Usage: cat <filename>\n");
 		return;
 	}
-
-	// cat [file]
-	readFile(content, args[1], &errno, parentIndex);
+	readFile(content, inputPath, &errno, parentIndex);
 
 	if(errno == -1) // file not found
 	{
-		print("No such file or directory\n");
+		printString("No such file or directory\n");
 	}
 	else if(errno == -2)
 	{
-		print("Is a directory\n");
+		printString("Is a directory\n");
 	}
 	else
 	{
-		print(content);
-		print("\n");
+		printString(content);
+		printString("\n");
 	}
 	return;
 }
@@ -35,5 +33,4 @@ int main()
 {
 	int argc;
 	char* argv;
-	cat(argc, argv, 0xFF);
 }
