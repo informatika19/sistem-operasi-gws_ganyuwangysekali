@@ -14,7 +14,7 @@ void ls(char* argv, char parentIndex);
 void ln(char* args, char parentIndex);
 
 // rm [path]
-void remove(int argc, char* args[], char parentIndex);
+void remove(char* args, char parentIndex);
 // rm [path] -r atau rm -r [path]
 void removebyIndex(char index, char** files, char** sectors, char** maps);
 

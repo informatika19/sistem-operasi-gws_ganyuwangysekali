@@ -37,7 +37,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 		i++;
 	}
 	i = 0;
-	while(i < 0x40 && (dir[(i<<4)+2] != 0)) i++;
+	while(i < 0x40 && (dir[(i << 4) + 2] != 0)) i++;
 	if(i > 0x3F){
 		// tidak ada dir kosong
 		*sectors = -2;
@@ -46,8 +46,8 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	if(!valid)
 	{
 		// folder tidak valid
-    		*sectors = -4;
-    		return;
+    	*sectors = -4;
+    	return;
 	}
 	
 	// baca map
@@ -70,7 +70,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	readSector(sect, 0x103);
 	k = 0;
 	
-	while(k < 0x20 && sect[k<<4] != 0) k++;
+	while(k < 0x20 && sect[k << 4] != 0) k++;
 	if(k == 0x20){
 		// sectors ga muat
 		*sectors = -3;
@@ -78,24 +78,24 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	}
 
   	// clear buffer files
-  	clear(dir+(i<<4), 16);
+  	clear(dir + (i << 4), 16);
   	// put parent index
-	dir[(i<<4)] = realParentIndex;
+	dir[i << 4] = realParentIndex;
   	// put sector index
-	dir[(i<<4)+1] = k;
+	dir[(i << 4) + 1] = k;
   	// copy filename to buffer
- 	strncpy(dir+(i<<4)+2, filename, 14);
+ 	strncpy(dir + (i << 4) + 2, filename, 14);
  	// write buffer to sector
 	writeSector(dir, 0x101);
-	writeSector(dir+0x100, 0x102);
+	writeSector(dir + 0x100, 0x102);
 	j = 0;
 	i = 0;
 	while(*sectors > 0)
 	{
 		if(map[j] != 0xFF)
 		{
-			writeSector(buffer+(i<<8), j);
-			sect[(k<<4)+i] = j;
+			writeSector(buffer + (i << 8), j);
+			sect[(k << 4) + i] = j;
 			map[j] = 0xFF;
 			i++;
 			*sectors--;
@@ -125,8 +125,8 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		*result = -1;
 		return;
 	}
-	S = dir[(S<<4)+1];
-	if(S > 0x1F && S != 0xFF) dir[((S-0x20)<<4)+1];
+	S = dir[(S << 4) + 1];
+	if(S > 0x1F && S != 0xFF) S = dir[((S - 0x20) << 4) + 1];
 	if (S == 0xFF) {
 		// yang kebaca itu folder
 		*result = -2;
@@ -157,7 +157,7 @@ char getPathIndex(char* path, char parentIndex)
 	int i;
 	
 	readSector(dir, 0x101);
-	readSector(dir+512, 0x102);
+	readSector(dir + 512, 0x102);
 
 	if(*path == 0) return parentIndex;
 	

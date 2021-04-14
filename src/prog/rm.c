@@ -7,14 +7,12 @@
 void removebyIndex(char index, char** files, char** sectors, char** maps)
 {
     int i;
-    char P = (*files)[(index << 4)];
     char S = (*files)[(index << 4) + 1];
     if(!(index >= 0x00 && index < 0x40))
     {
         interrupt(0x21, 0, "No such file or directory", 0, 0);
         return;
     }
-
 
     if(S >= 0x20) // kasus softlink
     {
@@ -40,7 +38,7 @@ void removebyIndex(char index, char** files, char** sectors, char** maps)
         return;
     }
 
-    // sebuah folder
+    // sebuah folder (hapus semua anaknya secara rekursif)
     for(i = 0; i < 0x40; i++)
     {
         if((*files)[i << 4] == index)
@@ -50,38 +48,41 @@ void removebyIndex(char index, char** files, char** sectors, char** maps)
     }
 }
 
-// idealnya argc >= 3
-void remove(int argc, char* args[], char parentIndex)
+void remove(char* args, char parentIndex)
 {
-    char files[1024], map[512], sectors[512];
-
-    int i, j, flagIdx;
-    unsigned char isRecursive = 0;
-    char* errorMessage;
+    char files[1024], map[512], sectors[512], path[128];
+    char commands[128];
+    int i, j, len;
+    unsigned char isRecursive = 0, valid = 0;
     char idx;
-    // rm
-    if(argc == 1)
-    {
-        interrupt(0x21, 0, "missing operand", 0, 0);
-        return;
-    }
 
-    // args[0] pasti "rm"
-    for(i = 1; i < argc; i++)
-    {
-        if(!strncmp(args[i], "-r", 2))
-        {
-            isRecursive = 1;
-            flagIdx = i;
-            break;
-        }
-    }
+    clear(path, 128);
+    while(*args == ' ') args++;
+	valid = 0;
+	while(*args != 0){
+		len = 0;
+		clear(commands, 128);
 
-    if(argc == 2 && isRecursive)
+        // cari panjang "sebuah" argv (dalam konteks argc argv)
+		while(*(args + len) != ' ' && *(args + len) != 0) len++;
+
+		strncpy(commands, args, len);
+		if(strncmp(commands, "-r", 2) == 0) isRecursive = 1;
+		else if(strlen(path) == 0) strncpy(path, commands, 128);
+		else{
+			len = -1;
+			break;
+		}
+		valid++; // banyaknya command yang sah
+		args += len + 1;
+	}
+
+    // tidak support menghapus banyak file
+    if((len == -1) || (valid < 1) || (valid > 2))
     {
-        interrupt(0x21, 0, "missing operand", 0, 0); // pesan error pas dicoba di ubuntu
-        return;
-    }
+		interrupt(0x21, 0, "Usage: rm [-r] <input>\n", 0, 0);
+		return;
+	}
 
 //    readSector(map, 0x100);
 //    readSector(files, 0x101);
@@ -91,52 +92,42 @@ void remove(int argc, char* args[], char parentIndex)
     interrupt(0x21, 0x0002, files, 0x101, 0);
     interrupt(0x21, 0x0002, files + 512, 0x102, 0);
     interrupt(0x21, 0x0002, sectors, 0x103, 0);
-    // argc != 2 atau !isRecursive
-    if(isRecursive) // argc > 2
-    {
-        for(i = 1; i < argc; i++)
-        {
-            if(i == flagIdx) continue;
 
-            getPathIndex(args[i], parentIndex);
-            removebyIndex(idx, &files, &sectors, &map);
-        }
+    idx = getPathIndex(path, parentIndex);
+    if(isRecursive) // valid == 2
+    {
+        removebyIndex(idx, &files, &sectors, &map);
     }
     else // gak rekursif
     {
-        for(i = 1; i < argc; i++)
+        // is a folder, tidak dihapus
+        if(files[(idx << 4) + 1] == 0xFF)
         {
-            getPathIndex(args[i], parentIndex);
+            interrupt(0x21, 0, "Is a directory\n", 0, 0);
+            return;
+        }
 
-            // is a folder
-            if(files[(idx << 4) + 1] == 0xFF)
-            {
-                strncpy(errorMessage, args[i], strlen(args[i]));
-                strncat(errorMessage, "Is a directory\n", 15);
-                interrupt(0x21, 0, errorMessage, 0, 0);
-                continue;
-            }
-
-            // kasus symlink
-            if(files[(idx << 4) + 1] >= 0x20)
-            {
-                for(j = 0; j < 16; j++)
-                {
-                    files[(idx << 4) + j] = 0x00;
-                }
-                continue;
-            }
-
-            // pasti sebuah file
-            for(j = 0; j < 16; j++)
-            {
-                sectors[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
-                map[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
-            }
+        // kasus symlink (ada dihapus, jadi perlu writeSector)
+        if(files[(idx << 4) + 1] >= 0x20)
+        {
             for(j = 0; j < 16; j++)
             {
                 files[(idx << 4) + j] = 0x00;
             }
+            interrupt(0x21, 0x0003, files, 0x101, 0);
+            interrupt(0x21, 0x0003, files + 512, 0x102, 0);
+            return;
+        }
+
+        // pasti sebuah file
+        for(j = 0; j < 16; j++)
+        {
+            sectors[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
+            map[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
+        }
+        for(j = 0; j < 16; j++)
+        {
+            files[(idx << 4) + j] = 0x00;
         }
     }
 //    writeSector(map, 0x100);

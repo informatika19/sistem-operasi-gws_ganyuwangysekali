@@ -44,6 +44,7 @@ char strncmp(char *str1, char *str2, int n){
 	return 1;
 }
 
+// mencari kemunculan pertama c pada s
 char *strchr(char *s, char c)
 {
 	while (*s != c && *s != '\0')

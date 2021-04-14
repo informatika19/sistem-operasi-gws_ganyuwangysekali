@@ -10,10 +10,8 @@ void cat(char *inputPath, char parentIndex)
 		interrupt(0x21, 0, "Usage: cat <filename>\n", 0, 0);
 		return;
 	}
-	interrupt(0x21, (parentIndex << 8) | 0x04, content, inputPath, &errno);
-//	readFile(BX, CX, DX, AH);
 //	readFile(content, inputPath, &errno, parentIndex);
-
+	interrupt(0x21, (parentIndex << 8) | 0x04, content, inputPath, &errno);
 	if(errno == -1) // file not found
 	{
 		interrupt(0x21, 0, "No such file or directory\n", 0, 0);
