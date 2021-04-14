@@ -213,12 +213,42 @@ void createFile(char* name, char parent, int* err)
   lib_writeFile(name, parent, "", err);
 }
 
-void deleteFolder(char* name, char parent, int* err)
+void removeIndex(char index, int* errno, char** files, char** sectors, char** maps)
 {
+    int i;
+    char S = (*files)[(index << 4) + 1];
 
-}
+    if(S >= 0x20) // kasus softlink
+    {
+        for(i = 0; i < 16; i++)
+        {
+            (*files)[(index << 4) + i] = 0x00;
+        }
+        return;
+    }
 
-void deleteFile(char* name, char parent, int* err)
-{
+    // bukan sebuah folder
+    if(S != 0xFF)
+    {
+        for(i = 0; i < 16; i++)
+        {
+            (*files)[(index << 4) + i] = 0x00;
+        }
+        for(i = 0; i < 16; i++)
+        {
+            (*sectors)[(S << 4) + i] = 0x00;
+            (*maps)[(S << 4) + i] = 0x00;
+        }
+        return;
+    }
 
+    // sebuah folder (hapus semua anaknya secara rekursif)
+    for(i = 0; i < 0x40; i++)
+    {
+        if((*files)[i << 4] == index)
+        {
+            removeIndex(i, errno, files, sectors, maps);
+        }
+    }
+    *errno = 1;
 }
