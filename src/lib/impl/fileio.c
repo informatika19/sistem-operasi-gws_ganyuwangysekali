@@ -112,6 +112,40 @@ char getParent(char* name, char parent)
   return parent;
 }
 
+void lib_getAbsolutePath(char* name, char* out)
+{
+  char* temp = name;
+  // cari posisi "/" terakhir
+  while(*temp != 0) temp++;
+  while(*temp != '/' && temp > name) temp--;
+
+  while(name < temp)
+  {
+    *out = *name;
+    name++;
+    out++;
+  }
+  *out = 0;
+}
+
+void lib_getFileName(char* name, char* out)
+{
+  char* temp = name;
+  // cari posisi "/" terakhir
+  while(*temp != 0) temp++;
+  while(*temp != '/' && temp > name) temp--;
+
+  // temp == name atau *temp == "/"
+  if(*temp == '/') temp++;
+  while (*temp != 0)
+  {
+    *out = temp;
+    name++;
+    out++;
+  }
+  *out = 0;
+}
+
 // errorcode mengikuti WRITEFILE
 void createFolder(char* name, char parent, int* err)
 {
@@ -172,40 +206,6 @@ void createFolder(char* name, char parent, int* err)
     lib_writeSector(files, 0x101);
     lib_writeSector(files + 512, 0x102);
   }
-}
-
-void lib_getAbsolutePath(char* name, char* out)
-{
-  char* temp = name;
-  // cari posisi "/" terakhir
-  while(*temp != 0) temp++;
-  while(*temp != '/' && temp > name) temp--;
-
-  while(name < temp)
-  {
-    *out = *name;
-    name++;
-    out++;
-  }
-  *out = 0;
-}
-
-void lib_getFileName(char* name, char* out)
-{
-  char* temp = name;
-  // cari posisi "/" terakhir
-  while(*temp != 0) temp++;
-  while(*temp != '/' && temp > name) temp--;
-
-  // temp == name atau *temp == "/"
-  if(*temp == '/') temp++;
-  while (*temp != 0)
-  {
-    *out = temp;
-    name++;
-    out++;
-  }
-  *out = 0;
 }
 
 void createFile(char* name, char parent, int* err)

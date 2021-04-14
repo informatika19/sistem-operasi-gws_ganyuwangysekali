@@ -2,6 +2,8 @@
 #define _FILEFOLDERIO_H
 
 char getParent(char* name, char parent);
+void lib_getAbsolutePath(char* name, char* out);
+void lib_getFileName(char* name, char* out);
 void createFolder(char* name, char parent, int* err);
 void createFile(char* name, char parent, int* err);
 void lib_writeFile(char* name, char parent, char* buffer, int* err);
