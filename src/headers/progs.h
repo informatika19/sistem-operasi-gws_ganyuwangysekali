@@ -15,7 +15,7 @@ void ln(char* args, char parentIndex);
 
 // rm [path]
 // rm [path] -r atau rm -r [path]
-void remove(char* args, char parentIndex);
+void remove(char* args, int* errno, char parentIndex);
 
 // copy [file] [output]
 // copy [-r] [path] [output]
