@@ -1,7 +1,3 @@
-#include "string.h"
-#include "fileio.h"
-#include "basicio.h"
-
 void ls(char *arg, char parentIndex)
 {
 	char dir[1024];

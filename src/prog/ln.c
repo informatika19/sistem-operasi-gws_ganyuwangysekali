@@ -1,7 +1,3 @@
-#include "string.h"
-#include "fileio.h"
-#include "basicio.h"
-
 void ln(char* args, char parentIndex)
 {
 	int errno;

@@ -1,6 +1,3 @@
-#include "basicio.h"
-#include "fileio.h"
-
 char chdir(char* inputPath, int* result, char parentIndex)
 {
 	char pathIndex, dir[1024];
