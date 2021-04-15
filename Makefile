@@ -7,7 +7,7 @@ kernel_asm=$(SRC)/kernel.asm
 bootloader_asm=$(SRC)/bootloader.asm
 boot_logo_in=$(SRC)/boot_logo
 
-out=out/
+out=out
 
 libs=$(SRC)/lib/headers/
 incl=$(SRC)/headers/ $(libs)
@@ -51,13 +51,13 @@ $(out)/lib_%.o: $(LIB_FOLDER)/%.c
 $(out)/impl_%.o: $(IMPL_FOLDER)/%.c
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
-$(out)/progu_%.o: $(PROGS_FOLDER)/%.c
+$(out)/prog_%.o: $(PROGS_FOLDER)/%.c
 	bcc $(CFLAGS) -I$(libs) -o $@ $<
 
 $(out)/lib_intr.o: $(SRC)/lib.asm
 	nasm -f as86 $< -o $@
 
-$(out)/prog_%: $(out)/progu_%.o $(LIB) $(out)/lib_intr.o
+$(out)/prog_%: $(out)/prog_%.o $(LIB) $(out)/lib_intr.o
 	ld86 -o $@ -d $^
 	python tools/loadfile.py $(sys_img) $@ $(addprefix /bin/,$(patsubst $(out)/prog_%, %, $@))
 
@@ -90,7 +90,7 @@ $(kernel_asm_o): $(kernel_asm) $(out)
 $(kernel): $(kernel_o) $(IMPL) $(LIB) $(kernel_asm_o)
 	ld86 -o $@ -d $^
 
-run: $(sys_img) $(PROGS)
+run: $(sys_img) #$(PROGS)
 	$(BOCHS) -f if2230.config
 
 clean:
