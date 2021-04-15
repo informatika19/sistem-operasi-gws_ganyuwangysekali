@@ -142,7 +142,7 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 			found = 1;
 		}
 		else {
-			readSector(buffer + (512 * j), sect[j]);
+			readSector(buffer + (512 * i), sect[j]);
 		}
 		i++;
 	}
