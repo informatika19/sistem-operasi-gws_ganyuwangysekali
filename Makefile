@@ -65,7 +65,7 @@ $(out):
 	mkdir $(out)
 
 $(boot_logo): $(boot_logo_in)
-	python3 $(TOOLS)/image2bin.py $< $@
+	python $(TOOLS)/image2bin.py $< $@
 
 $(map_img):
 	dd if=/dev/zero of=$@ bs=512 count=1
