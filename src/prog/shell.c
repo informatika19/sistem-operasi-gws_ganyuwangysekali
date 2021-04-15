@@ -1,5 +1,7 @@
-#include "shell.h"
-#include "file.h"
+#include "fileio.h"
+#include "basicio.h"
+
+void printPrompt(char* prompt, char path);
 
 void runShell() {
     unsigned char arrowClick;
@@ -18,7 +20,7 @@ void runShell() {
         if(arrowClick == 0)
             clear(command, 512);
         clear(cmd, 8);
-        readString(command+strlen(command));
+        readInput(command+strlen(command));
         if(command[strlen(command)-1] == '\n') command[strlen(command)-1] = 0;
         i = 0;
         while(command[i] != 0) i++;
@@ -41,10 +43,10 @@ void runShell() {
             else if(historyIdx > historyCount){
                 historyIdx = historyCount;
             }
-            for(i = 0; i < errNo; i++) printString("\b"); // hapus history sebelumnya
+            for(i = 0; i < errNo; i++) print("\b"); // hapus history sebelumnya
             clear(command, 512);
             strcpy(command, commandHistory[historyIdx]);
-            printString(commandHistory[historyIdx]);
+            print(commandHistory[historyIdx]);
             arrowClick = 1;
         }
 
@@ -55,15 +57,15 @@ void runShell() {
                 i++;
             }
             if (strncmp(cmd, "cd", 2) == 0) {
-                changedPath = chdir(command+2, &errNo, path);
+                // changedPath = chdir(command+2, &errNo, path);
                 if (errNo == 1) {
-                    printString("Not a directory\n");
+                    print("Not a directory\n");
                 }
                 else if (errNo == 2) {
-                    printString("No such file or directory\n");
+                    print("No such file or directory\n");
                 }
                 else if (errNo == 3) {
-                    printString("Not a valid file or directory\n");
+                    print("Not a valid file or directory\n");
                 }
                 else {
                     path = changedPath;
@@ -71,19 +73,19 @@ void runShell() {
             }
 
             else if (strncmp(cmd, "ls", 2) == 0) {
-                ls(command+2, path);
+                // ls(command+2, path);
             }
 
             else if (strncmp(cmd, "cat", 3) == 0) {
-                cat(command+3 ,path);
+                // cat(command+3 ,path);
             }
 
             else if (strncmp(cmd, "ln", 2) == 0) {
-                ln(command+2, path);
+                // ln(command+2, path);
             }
 
             else {
-                printString("No command found\n");
+                print("No command found\n");
             }
 
             // simpen history
@@ -105,15 +107,15 @@ void printPath(char path, unsigned char trunc) {
     int numOfOrder, j, i;
 
     if(path != 0xFF){
-        readSector(dir, 0x101);
-        readSector(dir+512, 0x102);
+        lib_readSector(dir, 0x101);
+        lib_readSector(dir+512, 0x102);
     }
 
-    if(!trunc || path == 0xFF) printString("/");
+    if(!trunc || path == 0xFF) print("/");
     if(trunc && path != 0xFF){
         clear(filename, 15);
         strncpy(filename, dir+path+2, 14);
-        printString(filename);
+        print(filename);
     }
     else{
         numOfOrder = 0;
@@ -128,8 +130,8 @@ void printPath(char path, unsigned char trunc) {
             currDir[j] = order[i];
             clear(filename, 15);
             strncpy(filename, dir+(order[i]<<4)+2, 14);
-            printString(filename);
-            printString("/");
+            print(filename);
+            print("/");
         }
     }
 }
@@ -157,7 +159,7 @@ void printPrompt(char* prompt, char dirIdx){
             }
             strncpy(current, prompt, i);
             current[i] = 0;
-            printString(current);
+            print(current);
             prompt += i;
         }
     }
