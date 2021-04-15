@@ -7,4 +7,4 @@ void print(char* buffer);
 void printInt(int x);
 void printHex(unsigned int x);
 
-#endif // _STDIO_H
+#endif

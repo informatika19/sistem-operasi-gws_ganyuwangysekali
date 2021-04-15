@@ -12,4 +12,4 @@ void lib_readSector(char *buffer, int sector);
 void lib_writeSector(char *buffer, int sector);
 void removeIndex(char index, int* errno, char** files, char** sectors, char** maps);
 
-#endif //_FILEFOLDERIO_H
+#endif
