@@ -33,8 +33,7 @@ void ln(char* args, char parentIndex)
 	}
 
 	/* Mengolah path input */
-	// readFile(content, inputPath, &errno, parentIndex);
-	lib_readFile(inputPath, parentIndex, content, &errno);
+	lib_readFile(content, inputPath, &errno, parentIndex);
 	if(errno == -1) // file tidak ditemukan
 	{
 		print("No such file or directory\n");
@@ -48,8 +47,7 @@ void ln(char* args, char parentIndex)
 	/* Mengolah path output */
 	lib_getFileName(outputPath, outputFilename);
 	lib_getAbsolutePath(outputPath, outputBasepath);
-	//readFile(content, outputFilename, &errno, parentIndex);
-	lib_readFile(outputPath, parentIndex, content, &errno);
+	lib_readFile(content, outputFilename, &errno, parentIndex);
 	if(errno == 0 || errno == -2) // file outputnya sudah ada :v
 	{
 		print("failed to create hard link: File exists\n");

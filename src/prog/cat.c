@@ -7,7 +7,7 @@ void cat(char *inputPath, char parentIndex)
 		print("Usage: cat <filename>\n");
 		return;
 	}
-	lib_readFile(inputPath, parentIndex, content, &errno);
+	lib_readFile(content, inputPath, &errno, parentIndex);
 	if(errno == -1) // file not found
 	{
 		print("No such file or directory\n");
