@@ -2,15 +2,17 @@ void ln(char* args, char parentIndex)
 {
 	int errno;
 	char content[8192], dir[1024], inputFileIdx, inputPath[128], outputPath[128], outputFilename[14], outputBasepath[512], outputParentIndex;
-	unsigned char valid, isSoft;
+	unsigned char valid = 0, isSoft = 0;
 
-	isSoft = 0;
 	clear(inputPath, 128);
 	clear(outputPath, 128);
-	while(*args == ' ') args++;
-	valid = 0;
 	while(*args != 0)
 	{
+		if(*args == ' ')
+		{
+			args++;
+			continue;
+		}
 		errno = 0;
 		clear(dir, 128);
 		while(*(args + errno) != ' ' && *(args + errno) != 0) errno++;
