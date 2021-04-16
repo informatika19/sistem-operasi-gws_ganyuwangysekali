@@ -39,7 +39,7 @@ int main ()
 	
 	// set mode text 
 	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
-	interrupt(0x21, 0xFF06, "/bin/shell", 0x2000, &x);
+	interrupt(0x21, 0xFF06, "/bin/shell", 0x3000, &x);
 }
 
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
