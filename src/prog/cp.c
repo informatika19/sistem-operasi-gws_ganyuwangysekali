@@ -1,5 +1,5 @@
 #include "string.h"
-#include "file.h"
+#include "fileio.h"
 
 // perlu pakai getFileName dari file
 int main(){

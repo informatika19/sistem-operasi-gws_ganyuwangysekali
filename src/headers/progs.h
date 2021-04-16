@@ -19,6 +19,6 @@ void remove(char* args, int* errno, char parentIndex);
 
 // copy [file] [output]
 // copy [-r] [path] [output]
-void copy(int argc, char* args[], char parentIndex);
+void copy(char* args, char parentIndex);
 
 #endif
