@@ -20,11 +20,6 @@ void lib_writeSector(char *buffer, int sector)
   interrupt(0x21, 0x0003, buffer, sector, 0);
 }
 
-void exec(char* name, char parent, int* err)
-{
-  interrupt(0x21, (parent << 8) | 0x06, name, 0x4000, err);
-}
-
 char getParent(char* name, char parent)
 {
   char currentFileName[14];
@@ -265,5 +260,5 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
 }
 
 void exec(char* file, char parent, int* err, int segment){
-  interrupt(0x21, 0x0006|(parent<<8), file, 0x3000, err);
+  interrupt(0x21, 0x0006|(parent<<8), file, 0x5000, err);
 }
