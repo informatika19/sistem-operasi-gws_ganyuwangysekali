@@ -1,11 +1,11 @@
 #include "string.h"
 
-void lib_readFile(char* name, char parent, char* buffer, int* err)
+void lib_readFile(char* buffer, char* name, int* err, char parent)
 {
   interrupt(0x21, (parent << 8)|0x04, buffer, name, err);
 }
 
-void lib_writeFile(char* name, char parent, char* buffer, int* err)
+void lib_writeFile(char* buffer, char* name, int* err, char parent)
 {
   interrupt(0x21, (parent << 8)|0x05, buffer, name, err);
 }
@@ -20,6 +20,11 @@ void lib_writeSector(char *buffer, int sector)
   interrupt(0x21, 0x0003, buffer, sector, 0);
 }
 
+void exec(char* name, char parent, int* err)
+{
+  interrupt(0x21, (parent << 8) | 0x06, name, 0x4000, err);
+}
+
 char getParent(char* name, char parent)
 {
   char currentFileName[14];
@@ -31,8 +36,6 @@ char getParent(char* name, char parent)
   lib_readSector(files + 512, 0x102);
 
   if(*name == 0) return parent;
-
-	// traverse the path
 
   // root
  	if(*name == '/')
@@ -147,6 +150,7 @@ void lib_getFileName(char* name, char* out)
 }
 
 // errorcode mengikuti WRITEFILE
+// tambah errorcode -5, BUAT FOLDER DI DALAM FILE
 void createFolder(char* name, char parent, int* err)
 {
   char files[1024];
@@ -199,6 +203,13 @@ void createFolder(char* name, char parent, int* err)
       return;
     }
 
+    // mau buat folder di dalam file
+    if(files[(parent << 4) + 1] != 0xFF)
+    {
+      *err = -5;
+      return;
+    }
+
     files[i << 4] = parent;
     files[(i << 4) + 1] = 0xFF;
     strncpy(files + (i << 4) + 2, fileName, 14);
@@ -210,7 +221,7 @@ void createFolder(char* name, char parent, int* err)
 
 void createFile(char* name, char parent, int* err)
 {
-  lib_writeFile(name, parent, "", err);
+  lib_writeFile("", name, err, parent);
 }
 
 void removeIndex(char index, int* errno, char** files, char** sectors, char** maps)
