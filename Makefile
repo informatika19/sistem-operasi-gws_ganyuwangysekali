@@ -85,12 +85,12 @@ $(kernel_o): $(kernel_c)
 	bcc $(CFLAGS) $(INCL_FLAG) -o $@ $<
 
 $(kernel_asm_o): $(kernel_asm) $(out)
-	nasm -i $(out) -f as86 $< -o $@
+	nasm -f as86 $< -o $@
 
-$(kernel): $(kernel_o) $(IMPL) $(LIB) $(kernel_asm_o)
+$(kernel): $(kernel_o) $(kernel_asm_o) $(LIB) $(IMPL)
 	ld86 -o $@ -d $^
 
-run: $(sys_img) #$(PROGS)
+run: $(sys_img) $(PROGS)
 	$(BOCHS) -f if2230.config
 
 clean:
