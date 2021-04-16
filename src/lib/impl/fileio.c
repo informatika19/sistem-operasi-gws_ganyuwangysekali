@@ -252,3 +252,7 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
     }
     *errno = 1;
 }
+
+void exec(char* file, char parent, int* err, int segment){
+  interrupt(0x21, 0x0006|(parent<<8), file, 0x3000, err);
+}
