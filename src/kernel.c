@@ -19,7 +19,6 @@ int main ()
 	// set graphics mode
 	// http://www.oldlinux.org/Linux.old/docs/interrupts/int-html/rb-0069.htm
 	// 13h = VGA Graphics (320x200, 256 colors)
-	interrupt(0x10, 0x0013, 0x0000, 0x0000, 0x0000);
 	// render graphics
 	makeInterrupt21();
 	interrupt(0x21, 0xFF04, logo, "logo", &x);
@@ -27,6 +26,7 @@ int main ()
 	height = logo[1]-1;
 	startx = (VGA_WIDTH - width)>>1;
 	starty = (VGA_HEIGHT - height)>>1;
+	interrupt(0x10, 0x0013, 0x0000, 0x0000, 0x0000);
 	for(y = height; y > 0; y--){
 		for(x = width; x > 0; x--){
 			putInMemory(VGA_MEMORY_BASE, (y+starty) * VGA_WIDTH + (x+startx), logo[(y*width)+x]);
@@ -35,7 +35,6 @@ int main ()
 
 
 	printString("Press any key to continue...");
-	setCursorPos(0, 0);
 	interrupt(0x16, 0, 0, 0, 0);
 	
 	// set mode text 
@@ -91,7 +90,7 @@ void executeProgram(char *filename, int segment, int *success, char parentIndex)
     // Buka file dengan readFile
     readFile(&fileBuffer, filename, &isSuccess, parentIndex);
     // If success, salin dengan putInMemory
-    if (isSuccess) {
+    if (isSuccess == 1) {
         // launchProgram
         int i = 0;
         for (i = 0; i < 512*16; i++) {

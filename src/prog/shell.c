@@ -1,11 +1,17 @@
 #include "fileio.h"
 #include "basicio.h"
 
+void runShell();
+
+int main(){
+    runShell();
+}
+
 void printPrompt(char* prompt, char path);
 
 void runShell() {
     unsigned char arrowClick;
-    char command[512], path, changedPath, commandHistory[8][512], cmd[8];
+    char command[512], path, changedPath, commandHistory[8][512], cmd[256];
     char prompt[100];
     int errNo, historyCount, historyIdx, i;
 
@@ -52,40 +58,23 @@ void runShell() {
 
         else {
             i = 0;
+            while(command[i] == ' ') i++;
+            errNo = 0;
             while(command[i] != ' ' && command[i] != 0){
-                cmd[i] = command[i];
+                cmd[errNo] = command[i];
                 i++;
+                errNo++;
             }
-            if (strncmp(cmd, "cd", 2) == 0) {
-                // changedPath = chdir(command+2, &errNo, path);
-                if (errNo == 1) {
-                    print("Not a directory\n");
+            cmd[errNo] = 0;
+            errNo = 1;
+            // lib_writeFile("temp", 0xFF, command, &errNo);
+            if(errNo>0){
+                if(strncmp(cmd, "./", 2) == 0){
+                    exec(cmd+2, path, &errNo, 0x3000);
                 }
-                else if (errNo == 2) {
-                    print("No such file or directory\n");
+                else{
+                    exec(cmd, getParent("bin", 0xFF), &errNo, 0x2000);
                 }
-                else if (errNo == 3) {
-                    print("Not a valid file or directory\n");
-                }
-                else {
-                    path = changedPath;
-                }
-            }
-
-            else if (strncmp(cmd, "ls", 2) == 0) {
-                // ls(command+2, path);
-            }
-
-            else if (strncmp(cmd, "cat", 3) == 0) {
-                // cat(command+3 ,path);
-            }
-
-            else if (strncmp(cmd, "ln", 2) == 0) {
-                // ln(command+2, path);
-            }
-
-            else {
-                print("No command found\n");
             }
 
             // simpen history
@@ -164,5 +153,3 @@ void printPrompt(char* prompt, char dirIdx){
         }
     }
 }
-
-int main(){}
