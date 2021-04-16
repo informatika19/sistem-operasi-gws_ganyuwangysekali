@@ -1,3 +1,6 @@
+void readInput(char* buffer){
+  interrupt(0x21, 0x0001, buffer, 0, 0);
+}
 void print(char* buf){
   interrupt(0x21, 0, buf, 0, 0);
 }
