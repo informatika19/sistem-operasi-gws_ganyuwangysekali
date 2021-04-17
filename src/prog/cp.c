@@ -67,6 +67,10 @@ void copy(char* args, char parentIndex)
 			print("No such file or directory!\n");
 		}
     }
+	else
+	{
+		
+	}
 }
 
 // perlu pakai getFileName dari file

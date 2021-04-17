@@ -14,6 +14,8 @@ void lib_writeSector(char *buffer, int sector);
 void removeIndex(char index, int* errno, char** files, char** sectors, char** maps);
 int countEmptyFile();
 int countEmptySector();
+int countNumOfFiles(char index, char* files);
+int countNumOfSectors(char index, char* files, char* sectors);
 
 void exec(char* name, char parent, int* err, int segment);
 

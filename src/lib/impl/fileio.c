@@ -306,3 +306,45 @@ int countEmptySector()
   }
   return result;
 }
+
+int countNumOfFiles(char index, char* files)
+{
+  char i;
+  unsigned char result = 0;
+
+  // kalau bukan folder, pasti cuman 1 file.
+  // mau itu hard/softlink
+  if(files[(index << 4) + 1] != 0xFF) return 1;
+
+  // kalau folder
+  for(i = 0; i < 0x40; i++)
+  {
+    if(files[i << 4] == index) result += countNumOfFiles(i, files);
+  }
+  return result + 1;
+}
+
+int countNumOfSectors(char index, char* files, char* sectors)
+{
+  char i;
+  unsigned char result = 0;
+
+  // file biasa atau hardlink, bukan softlink
+  if(files[(index << 4) + 1 >= 0x00] && files[(index << 4) + 1] < 0x20)
+  {
+    return 1;
+  }
+  
+  // kalau softlink
+  if(files[(index << 4) + 1] >= 0x20 && files[(index << 4) + 1] < 0x60)
+  {
+    return 0;
+  }
+
+  // kalau folder
+  for(i = 0; i < 0x40; i++)
+  {
+    if(files[i << 4] == index) result += countNumOfSectors(i, files, sectors);
+  }
+  return result;
+}
