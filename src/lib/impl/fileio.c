@@ -229,38 +229,52 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
 {
     int i;
     char S = (*files)[(index << 4) + 1];
+    unsigned char hasHardLinked = 0;
 
     if(S >= 0x20) // kasus softlink
     {
-        for(i = 0; i < 16; i++)
-        {
-            (*files)[(index << 4) + i] = 0x00;
-        }
-        return;
+      for(i = 0; i < 16; i++)
+      {
+        (*files)[(index << 4) + i] = 0x00;
+      }
+      *errno = 1;
+      return;
     }
 
     // bukan sebuah folder
     if(S != 0xFF)
     {
-        for(i = 0; i < 16; i++)
-        {
-            (*files)[(index << 4) + i] = 0x00;
-        }
-        for(i = 0; i < 16; i++)
-        {
-            (*sectors)[(S << 4) + i] = 0x00;
-            (*maps)[(S << 4) + i] = 0x00;
-        }
-        return;
+      // cari apakah sektor yang bersangkutan ada yang hardlink
+      // kalau ada, sektornya tidak dihapus
+      for(i = 0; i < 0x40; i++)
+      {
+        if(i == index) continue;
+        if((*files)[(i << 4) + 1] == S) hasHardLinked = 1;
+      }
+
+      *errno = 1;
+      for(i = 0; i < 16; i++)
+      {
+        (*files)[(index << 4) + i] = 0x00;
+      }
+
+      if(hasHardLinked) return;
+      
+      for(i = 0; i < 16; i++)
+      {
+        (*sectors)[(S << 4) + i] = 0x00;
+        (*maps)[(S << 4) + i] = 0x00;
+      }
+      return;
     }
 
     // sebuah folder (hapus semua anaknya secara rekursif)
     for(i = 0; i < 0x40; i++)
     {
-        if((*files)[i << 4] == index)
-        {
-            removeIndex(i, errno, files, sectors, maps);
-        }
+      if((*files)[i << 4] == index)
+      {
+        removeIndex(i, errno, files, sectors, maps);
+      }
     }
     *errno = 1;
 }
