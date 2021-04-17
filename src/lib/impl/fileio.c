@@ -110,7 +110,8 @@ char getParent(char* name, char parent)
     
     // kasus softlink
  		if(files[(i << 4) + 1] >= 0x20 && files[(i << 4) + 1] != 0xFF) i = (files[(i << 4) + 1] - 0x20);
- 		parent = i;    
+    if(files[(i << 4) + 2] == 0) return 0xFE;
+ 		parent = i;
  	}
   return parent;
 }
@@ -262,4 +263,32 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
         }
     }
     *errno = 1;
+}
+
+int countEmptyFile()
+{
+  char files[1024], i;
+  unsigned char result = 0;
+
+  lib_readSector(files, 0x101);
+  lib_readSector(files + 512, 0x102);
+
+  for(i = 0; i < 0x40; i++)
+  {
+    if(files[(i << 4) + 2] == 0) result++;
+  }
+  return result;
+}
+
+int countEmptySector()
+{
+  char sectors[512], i;
+  unsigned char result = 0;
+
+  lib_readSector(sectors, 0x103);
+  for(i = 0; i < 0x20; i++)
+  {
+    if(sectors[i << 4] == 0) result++;
+  }
+  return result;
 }

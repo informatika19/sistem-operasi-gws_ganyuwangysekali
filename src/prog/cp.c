@@ -54,6 +54,18 @@ void copy(char* args, char parentIndex)
     if(!isRecursive)
     {
         lib_writeFile(content, outputPath, &len, parentIndex);
+		if(len == -1)
+		{
+			print("File exists\n");
+		}
+		else if(len == -2 || len == -3)
+		{
+			print("Not enough space!\n");
+		}
+		else
+		{
+			print("No such file or directory!\n");
+		}
     }
 }
 

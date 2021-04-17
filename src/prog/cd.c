@@ -12,7 +12,7 @@ char chdir(char* inputPath, int* result, char parentIndex)
 
 	if(pathIndex == 0xFE)
 	{
-		*result = 2;
+		*result = -2;
 		return parentIndex;
 	}
 
@@ -26,14 +26,13 @@ char chdir(char* inputPath, int* result, char parentIndex)
 	
 	// kasus softlink
 	if(dir[(pathIndex << 4) + 1] > 0x1F && dir[(pathIndex << 4)+1] != 0xFF) pathIndex = dir[(pathIndex << 4) + 1] - 0x20;
-	
+
 	// sectornya itu sector file
 	if ((dir[(pathIndex << 4) + 1] <= 0x1F) && (dir[(pathIndex << 4) + 1] >= 0x00))
 	{
-		*result = 1;
+		*result = -1;
 		return parentIndex;
 	}
-	
 	*result = 0;
 	return pathIndex;
 }
@@ -44,11 +43,11 @@ int main()
 	char cwd;
 	// cwd = chdir(argc, argv, &errno, cwd);
 	
-	if(errno == 1)
+	if(errno == -1)
 	{
 		print("Not a directory");
 	}
-	else if(errno == 2)
+	else if(errno == -2)
 	{
 		print("No such file or directory");
 	}
