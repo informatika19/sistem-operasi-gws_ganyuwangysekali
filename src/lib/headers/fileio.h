@@ -12,6 +12,6 @@ void lib_readFile(char* buffer, char* name, int* err, char parent);
 void lib_readSector(char *buffer, int sector);
 void lib_writeSector(char *buffer, int sector);
 void removeIndex(char index, int* errno, char** files, char** sectors, char** maps);
-void exec(char* name, char parent, int* err, int segment);
+void exec(char* name, char parent, int* err);
 
 #endif
