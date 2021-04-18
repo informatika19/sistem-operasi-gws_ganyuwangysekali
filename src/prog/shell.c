@@ -11,11 +11,16 @@ int main() {
     int errNo, historyCount, historyIdx, i;
 
     lib_readFile(fileBuf, "history", &errNo, 0xFF);
-    historyCount = fileBuf[512*4];
-    for(i = 0; i < 4; i++){
-        for(errNo = 0; errNo < 512; errNo++){
-            commandHistory[i][errNo] = fileBuf[i*512+errNo];
+    if(errNo > 0){
+        historyCount = (int)fileBuf[2048];
+        for(i = 0; i < 4; i++){
+            for(errNo = 0; errNo < 512; errNo++){
+                commandHistory[i][errNo] = fileBuf[i*512+errNo];
+            }
         }
+    }
+    else{
+        historyCount = 0;
     }
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
     removeFEntry("/tempc", 0xFF, &errNo);
@@ -26,7 +31,6 @@ int main() {
     else
         path = 0xFF;
     arrowClick = 0;
-    historyCount = 0;
     historyIdx = -1;
     printPrompt(prompt, path);
     while (1) {
@@ -59,11 +63,13 @@ int main() {
             else if(historyIdx > historyCount){
                 historyIdx = historyCount;
             }
-            for(i = 0; i < errNo; i++) print("\b"); // hapus history sebelumnya
-            clear(command, 512);
-            strcpy(command, commandHistory[historyIdx]);
-            print(commandHistory[historyIdx]+1);
-            arrowClick = 1;
+            if(historyIdx >= 0 && historyIdx < historyCount){
+                for(i = 0; i < errNo; i++) print("\b"); // hapus history sebelumnya
+                clear(command, 512);
+                strcpy(command, commandHistory[historyIdx]);
+                print(commandHistory[historyIdx]+1);
+                arrowClick = 1;
+            }
         }
 
         else {
@@ -77,6 +83,7 @@ int main() {
             }
             cmd[errNo] = 0;
             command[0];
+            if(strncmp(cmd, "") == 0) exec("/bin/shell", 0xFF, &errNo);
             // simpen history
             historyCount++;
             if(historyCount > 4) historyCount = 4;
@@ -87,10 +94,11 @@ int main() {
             strcpy(commandHistory, command);
             for(i = 0; i < 4; i++){
                 for(errNo = 0; errNo < 512; errNo++){
-                    fileBuf[i*512+errNo] = commandHistory[i][errNo];
+                    fileBuf[(i*512)+errNo] = commandHistory[i][errNo];
                 }
             }
-            fileBuf[512*4] = historyCount;
+            *(fileBuf+0xFF+0xFF+0xFF+0xFF) = (historyCount&0xFF);
+            printInt(fileBuf[2048]);
             removeFEntry("history", 0xFF, &errNo);
             errNo = 5;
             lib_writeFile(fileBuf, "history", &errNo, 0xFF);
