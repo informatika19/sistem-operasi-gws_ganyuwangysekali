@@ -1,32 +1,42 @@
 #include "basicio.h"
 #include "fileio.h"
 
-char chdir(char* inputPath, int* result, char parentIndex);
+char chdir(char* inputPath, char parentIndex);
 
 int main()
 {
-	int errno = 0;
-	char cwd;
-	// cwd = chdir(argc, argv, &errno, cwd);
+	char fileBuf[8192], arg[512];
+	int errNo = 0;
+	char cwd, parent;
 	
-	if(errno == -1)
-	{
-		print("Not a directory");
-	}
-	else if(errno == -2)
-	{
-		print("No such file or directory");
-	}
-	return errno;
+	lib_readFile(fileBuf, "shellcwd", &errNo, 0xFF);
+    if(errNo == 1)
+        cwd = fileBuf[0];
+    else
+        cwd = 0xFF;
+
+	clear(fileBuf, 8192);
+
+	lib_readFile(fileBuf, "tempc", &errNo, 0xFF);
+	removeFEntry("tempc", 0xFF, &errNo);
+	parse(fileBuf, &parent, arg);
+
+	cwd = chdir(arg, cwd);
+	removeFEntry("shellcwd", 0xFF, &errNo);
+
+	clear(fileBuf, 8192);
+	fileBuf[0] = cwd;
+	errNo = 16;
+
+	lib_writeFile(fileBuf, "shellcwd", &errNo, 0xFF);
 }
 
-char chdir(char* inputPath, int* result, char parentIndex)
+char chdir(char* inputPath, char parentIndex)
 {
 	char pathIndex, dir[1024];
 	while(*inputPath == ' ') inputPath++;
 	if(*inputPath == 0)
 	{
-		*result = 0;
 		return 0xFF;
 	}
 	
@@ -34,12 +44,11 @@ char chdir(char* inputPath, int* result, char parentIndex)
 
 	if(pathIndex == 0xFE)
 	{
-		*result = -2;
+		print("No such file or directory\n");
 		return parentIndex;
 	}
 
 	if(pathIndex == 0xFF){
-		*result = 0;
 		return 0xFF;
 	}
 	
@@ -52,9 +61,8 @@ char chdir(char* inputPath, int* result, char parentIndex)
 	// sectornya itu sector file
 	if ((dir[(pathIndex << 4) + 1] <= 0x1F) && (dir[(pathIndex << 4) + 1] >= 0x00))
 	{
-		*result = -1;
+		print("Not a directory\n");
 		return parentIndex;
 	}
-	*result = 0;
 	return pathIndex;
 }
