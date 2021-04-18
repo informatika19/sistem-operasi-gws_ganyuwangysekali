@@ -5,12 +5,18 @@ void printPrompt();
 
 int main() {
     unsigned char arrowClick;
-    char command[512], path, changedPath, commandHistory[8][512], cmd[256];
+    char command[512], path, changedPath, commandHistory[4][512], cmd[256];
     char fileBuf[8192];
     char prompt[100];
     int errNo, historyCount, historyIdx, i;
 
-    lib_readFile(commandHistory, "history", &errNo, 0xFF);
+    lib_readFile(fileBuf, "history", &errNo, 0xFF);
+    historyCount = fileBuf[512*4];
+    for(i = 0; i < 4; i++){
+        for(errNo = 0; errNo < 512; errNo++){
+            commandHistory[i][errNo] = fileBuf[i*512+errNo];
+        }
+    }
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
     removeFEntry("/tempc", 0xFF, &errNo);
     
@@ -73,15 +79,21 @@ int main() {
             command[0];
             // simpen history
             historyCount++;
-            if(historyCount > 16) historyCount = 16;
+            if(historyCount > 4) historyCount = 4;
             historyIdx = -1;
             for (i = historyCount-1; i > 0; i--) {
                 strcpy(commandHistory[i], commandHistory[i-1]);
             }
             strcpy(commandHistory, command);
+            for(i = 0; i < 4; i++){
+                for(errNo = 0; errNo < 512; errNo++){
+                    fileBuf[i*512+errNo] = commandHistory[i][errNo];
+                }
+            }
+            fileBuf[512*4] = historyCount;
             removeFEntry("history", 0xFF, &errNo);
-            errNo = 8;
-            lib_writeFile(commandHistory, "history", &errNo, 0xFF);
+            errNo = 5;
+            lib_writeFile(fileBuf, "history", &errNo, 0xFF);
             errNo = 1;
             lib_writeFile(command, "tempc", &errNo, 0xFF);
             if(errNo>0){
@@ -92,9 +104,9 @@ int main() {
                     exec(cmd, getParent("bin", 0xFF), &errNo);
                 }
             }
-
         }
     }
+    exec("/bin/shell", 0xFF, &errNo);
 }
 
 void printPath(char path, unsigned char trunc) {
