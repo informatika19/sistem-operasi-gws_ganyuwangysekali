@@ -262,8 +262,8 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
       
     for(i = 0; i < 16; i++)
     {
-      (*sectors)[(S << 4) + i] = 0x00;
       (*maps)[(S << 4) + i] = 0x00;
+      (*sectors)[(S << 4) + i] = 0x00;
     }
     return;
   }
@@ -277,4 +277,18 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
     }
   }
   *errno = 1;
+}
+
+void removeFEntry(char* name, char parent, int* err){
+  char files[1024], sectors[512], maps[512];
+  lib_readSector(maps, 0x100);
+  lib_readSector(files, 0x101);
+  lib_readSector(files+512, 0x102);
+  lib_readSector(sectors, 0x103);
+  removeIndex(getParent(name, parent), err, files, sectors, maps);
+  lib_writeSector(maps, 0x100);
+  lib_writeSector(files, 0x101);
+  lib_writeSector(files+512, 0x102);
+  lib_writeSector(sectors, 0x103);
+  printInt(*err);
 }
