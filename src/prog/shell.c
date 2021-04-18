@@ -1,21 +1,16 @@
 #include "fileio.h"
-#include "basicio.h"
+#include "buffer.h"
 
-void runShell();
+void printPrompt();
 
-int main(){
-    runShell();
-}
-
-void printPrompt(char* prompt, char path);
-
-void runShell() {
+int main() {
     unsigned char arrowClick;
     char command[512], path, changedPath, commandHistory[8][512], cmd[256];
     char prompt[100];
     int errNo, historyCount, historyIdx, i;
 
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
+    // removeFEntry("/tempc", 0xFF, &errNo);
     
     path = 0xFF;
     arrowClick = 0;
@@ -25,10 +20,10 @@ void runShell() {
     while (1) {
         if(arrowClick == 0)
             clear(command, 512);
-        clear(cmd, 8);
+        clear(cmd, 256);
         readInput(command+strlen(command));
         if(command[strlen(command)-1] == '\n') command[strlen(command)-1] = 0;
-        i = 0;
+        i = 1;
         while(command[i] != 0) i++;
 
         if (command[i] == 0x00 && command[i+1] != 0) { // maybe special command?
@@ -67,13 +62,14 @@ void runShell() {
             }
             cmd[errNo] = 0;
             errNo = 1;
-            // lib_writeFile("temp", 0xFF, command, &errNo);
+            command[0] = path;
+            lib_writeFile(command, "tempc", &errNo, 0xFF);
             if(errNo>0){
                 if(strncmp(cmd, "./", 2) == 0){
-                    exec(cmd+2, path, &errNo, 0x3000);
+                    exec(cmd+2, path, &errNo);
                 }
                 else{
-                    exec(cmd, getParent("bin", 0xFF), &errNo, 0x2000);
+                    exec(cmd, getParent("bin", 0xFF), &errNo);
                 }
             }
 
