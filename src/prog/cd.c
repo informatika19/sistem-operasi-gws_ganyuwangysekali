@@ -1,4 +1,5 @@
 #include "basicio.h"
+#include "buffer.h"
 #include "fileio.h"
 
 char chdir(char* inputPath, char parentIndex);
@@ -7,28 +8,21 @@ int main()
 {
 	char fileBuf[8192], arg[512];
 	int errNo = 0;
-	char cwd, parent;
-	
-	lib_readFile(fileBuf, "shellcwd", &errNo, 0xFF);
-    if(errNo == 1)
-        cwd = fileBuf[0];
-    else
-        cwd = 0xFF;
-
+	char parent;
 	clear(fileBuf, 8192);
 
 	lib_readFile(fileBuf, "tempc", &errNo, 0xFF);
 	removeFEntry("tempc", 0xFF, &errNo);
 	parse(fileBuf, &parent, arg);
 
-	cwd = chdir(arg, cwd);
-	removeFEntry("shellcwd", 0xFF, &errNo);
+	parent = chdir(arg, parent);
 
 	clear(fileBuf, 8192);
-	fileBuf[0] = cwd;
+	fileBuf[0] = parent;
 	errNo = 16;
+	lib_writeFile(fileBuf, "tempc", &errNo, 0xFF);
 
-	lib_writeFile(fileBuf, "shellcwd", &errNo, 0xFF);
+	exec("/bin/shell", 0xFF, &errNo);
 }
 
 char chdir(char* inputPath, char parentIndex)

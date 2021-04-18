@@ -1,3 +1,4 @@
+#include "buffer.h"
 #include "fileio.h"
 
 void ls(char* arg, char parentIndex);
@@ -10,8 +11,14 @@ int main()
 	lib_readFile(buffer, "tempc", &err, 0xFF);
 	removeFEntry("tempc", 0xFF, &err);
 	parse(buffer, &parent, arg);
-	parent = 0xFF;
+
 	ls(arg, parent);
+
+	clear(buffer, 8192);
+	buffer[0] = parent;
+	err = 16;
+	lib_writeFile(buffer, "tempc", &err, 0xFF);
+
 	exec("/bin/shell", 0xFF, &err);
 }
 

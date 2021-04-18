@@ -7,6 +7,21 @@ void remove(char* args, int* errno, char parentIndex);
 
 int main()
 {
+    char buffer[512 << 4];
+	char parent, arg[512];
+	int err;
+	lib_readFile(buffer, "tempc", &err, 0xFF);
+	removeFEntry("tempc", 0xFF, &err);
+	parse(buffer, &parent, arg);
+
+	remove(arg, &err, parent);
+
+	clear(buffer, 8192);
+	buffer[0] = parent;
+	err = 16;
+	lib_writeFile(buffer, "tempc", &err, 0xFF);
+
+	exec("/bin/shell", 0xFF, &err);
 }
 
 void remove(char* args, int* errno, char parentIndex)
