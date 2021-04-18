@@ -4,7 +4,7 @@
 void copy(char* args, char parentIndex)
 {
     int len;
-	char content[8192], dir[1024], inputPath[128], outputPath[128];
+	char content[8192], dir[128], inputPath[128], outputPath[128];
 	unsigned char valid = 0, isRecursive = 0;
 
 	clear(inputPath, 128);
@@ -29,7 +29,7 @@ void copy(char* args, char parentIndex)
 			break;
 		}
 		valid++;
-		args += len+1;
+		args += len + 1;
 	}
 	if((valid > 3) || (len == -1) || (valid < 2))
 	{
@@ -69,7 +69,7 @@ void copy(char* args, char parentIndex)
     }
 	else
 	{
-		
+		print("cp -r not implemented\n");
 	}
 }
 

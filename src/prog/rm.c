@@ -3,15 +3,13 @@
 #include "buffer.h"
 #include "fileio.h"
 
-// menangani kasus rekursif pakai removeIndex
-
 void remove(char* args, int* errno, char parentIndex)
 {
     char files[1024], map[512], sectors[512], path[128];
     char commands[128];
     int i, j;
     unsigned char isRecursive = 0, valid = 0;
-    char idx;
+    char idx, S;
 
     clear(path, 128);
     while(*args == ' ') args++;
@@ -38,7 +36,7 @@ void remove(char* args, int* errno, char parentIndex)
     if((*errno == 0) || (valid < 1) || (valid > 2))
     {
         // salah penggunaan
-//		print("Usage: rm [-r] <input>\n");
+		print("Usage: rm [-r] <input>\n");
 		return;
 	}
 
@@ -58,32 +56,13 @@ void remove(char* args, int* errno, char parentIndex)
         if(files[(idx << 4) + 1] == 0xFF)
         {
             *errno = -2; // Is a directory
+            print("Is a directory\n");
             return;
         }
 
-        // kasus symlink (ada dihapus, jadi perlu writeSector)
-        if(files[(idx << 4) + 1] >= 0x20)
-        {
-            for(j = 0; j < 16; j++)
-            {
-                files[(idx << 4) + j] = 0x00;
-            }
-            lib_writeSector(files, 0x101);
-            lib_writeSector(files + 512, 0x102);
-            *errno = 1;
-            return;
-        }
-
-        // pasti sebuah file
-        for(j = 0; j < 16; j++)
-        {
-            sectors[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
-            map[(files[(idx << 4) + 1] << 4) + 1] = 0x00;
-        }
-        for(j = 0; j < 16; j++)
-        {
-            files[(idx << 4) + j] = 0x00;
-        }
+        // sudah pasti bukan folder
+        // removeIndex pasti tidak rekursif
+        removeIndex(idx, errno, &files, &sectors, &map);
     }
     lib_writeSector(map, 0x100);
     lib_writeSector(files, 0x101);
