@@ -6,20 +6,29 @@ void printPrompt();
 int main() {
     unsigned char arrowClick;
     char command[512], path, changedPath, commandHistory[8][512], cmd[256];
+    char fileBuf[8192];
     char prompt[100];
     int errNo, historyCount, historyIdx, i;
 
+    lib_readFile(commandHistory, "history", &errNo, 0xFF);
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
-    // removeFEntry("/tempc", 0xFF, &errNo);
+    removeFEntry("/tempc", 0xFF, &errNo);
     
-    path = 0xFF;
+    lib_readFile(fileBuf, "shellcwd", &errNo, 0xFF);
+    if(errNo == 1)
+        path = fileBuf[0];
+    else
+        path = 0xFF;
     arrowClick = 0;
     historyCount = 0;
     historyIdx = -1;
     printPrompt(prompt, path);
     while (1) {
-        if(arrowClick == 0)
+        if(arrowClick == 0){
             clear(command, 512);
+            command[0] = path;
+            command[1] = 0;
+        }
         clear(cmd, 256);
         readInput(command+strlen(command));
         if(command[strlen(command)-1] == '\n') command[strlen(command)-1] = 0;
@@ -47,12 +56,12 @@ int main() {
             for(i = 0; i < errNo; i++) print("\b"); // hapus history sebelumnya
             clear(command, 512);
             strcpy(command, commandHistory[historyIdx]);
-            print(commandHistory[historyIdx]);
+            print(commandHistory[historyIdx]+1);
             arrowClick = 1;
         }
 
         else {
-            i = 0;
+            i = 1;
             while(command[i] == ' ') i++;
             errNo = 0;
             while(command[i] != ' ' && command[i] != 0){
@@ -61,8 +70,19 @@ int main() {
                 errNo++;
             }
             cmd[errNo] = 0;
+            command[0];
+            // simpen history
+            historyCount++;
+            if(historyCount > 16) historyCount = 16;
+            historyIdx = -1;
+            for (i = historyCount-1; i > 0; i--) {
+                strcpy(commandHistory[i], commandHistory[i-1]);
+            }
+            strcpy(commandHistory, command);
+            removeFEntry("history", 0xFF, &errNo);
+            errNo = 8;
+            lib_writeFile(commandHistory, "history", &errNo, 0xFF);
             errNo = 1;
-            command[0] = path;
             lib_writeFile(command, "tempc", &errNo, 0xFF);
             if(errNo>0){
                 if(strncmp(cmd, "./", 2) == 0){
@@ -73,16 +93,6 @@ int main() {
                 }
             }
 
-            // simpen history
-            historyCount++;
-            if(historyCount > 8) historyCount = 8;
-            historyIdx = -1;
-            for (i = historyCount-1; i > 0; i--) {
-                strcpy(commandHistory[i], commandHistory[i-1]);
-            }
-            strcpy(commandHistory, command);
-            printPrompt(prompt, path);
-            arrowClick = 0;
         }
     }
 }
