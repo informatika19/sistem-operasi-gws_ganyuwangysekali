@@ -1,6 +1,12 @@
 #include "string.h"
 #include "fileio.h"
 
+void copy(char* args, char parentIndex);
+
+int main(){
+
+}
+
 void copy(char* args, char parentIndex)
 {
     int len;
@@ -71,9 +77,4 @@ void copy(char* args, char parentIndex)
 	{
 		print("cp -r not implemented\n");
 	}
-}
-
-// perlu pakai getFileName dari file
-int main(){
-
 }

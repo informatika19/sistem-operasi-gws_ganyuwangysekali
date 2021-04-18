@@ -1,3 +1,25 @@
+#include "basicio.h"
+#include "fileio.h"
+
+char chdir(char* inputPath, int* result, char parentIndex);
+
+int main()
+{
+	int errno = 0;
+	char cwd;
+	// cwd = chdir(argc, argv, &errno, cwd);
+	
+	if(errno == -1)
+	{
+		print("Not a directory");
+	}
+	else if(errno == -2)
+	{
+		print("No such file or directory");
+	}
+	return errno;
+}
+
 char chdir(char* inputPath, int* result, char parentIndex)
 {
 	char pathIndex, dir[1024];
@@ -35,21 +57,4 @@ char chdir(char* inputPath, int* result, char parentIndex)
 	}
 	*result = 0;
 	return pathIndex;
-}
-
-int main()
-{
-	int errno = 0;
-	char cwd;
-	// cwd = chdir(argc, argv, &errno, cwd);
-	
-	if(errno == -1)
-	{
-		print("Not a directory");
-	}
-	else if(errno == -2)
-	{
-		print("No such file or directory");
-	}
-	return errno;
 }

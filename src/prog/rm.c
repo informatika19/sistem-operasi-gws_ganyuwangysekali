@@ -3,6 +3,12 @@
 #include "buffer.h"
 #include "fileio.h"
 
+void remove(char* args, int* errno, char parentIndex);
+
+int main()
+{
+}
+
 void remove(char* args, int* errno, char parentIndex)
 {
     char files[1024], map[512], sectors[512], path[128];
@@ -68,8 +74,4 @@ void remove(char* args, int* errno, char parentIndex)
     lib_writeSector(files, 0x101);
     lib_writeSector(files + 512, 0x102);
     lib_writeSector(sectors, 0x103);
-}
-
-int main()
-{
 }

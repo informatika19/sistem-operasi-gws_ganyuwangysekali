@@ -1,3 +1,12 @@
+#include "string.h"
+#include "fileio.h"
+#include "basicio.h"
+
+void ln(char* args, char parentIndex);
+
+int main(){
+}
+
 void ln(char* args, char parentIndex)
 {
 	int errno;
@@ -93,7 +102,4 @@ void ln(char* args, char parentIndex)
 	lib_writeSector(dir, 0x101);
 	lib_writeSector(dir + 512, 0x102);
 	return;
-}
-
-int main(){
 }
