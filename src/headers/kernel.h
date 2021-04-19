@@ -15,5 +15,6 @@
 #define TEXT_HEIGHT 25
 
 void clearScreen();
+void executeProgram(char *filename, int segment, int *success, char parentIndex);
 
 #endif
