@@ -11,8 +11,12 @@ int main()
 	lib_readFile(buffer, "tempc", &err, 0xFF);
 	removeFEntry("tempc", 0xFF, &err);
 	parse(buffer, &parent, arg);
-
 	ls(arg, parent);
+
+	clear(buffer, 8192);
+	buffer[0] = parent;
+	err = 1;
+	lib_writeFile(buffer, "tempc", &err, 0xFF);
 
 	exec("/bin/shell", 0xFF, &err);
 }

@@ -18,8 +18,8 @@ int main()
 
 	clear(buffer, 8192);
 	buffer[0] = parent;
-	err = 16;
-	lib_writeFile(buffer, "tempc", &err, 0xFF);
+    err = 1;
+    lib_writeFile(buffer, "tempc", &err, 0xFF);
 
 	exec("/bin/shell", 0xFF, &err);
 }

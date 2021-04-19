@@ -16,7 +16,7 @@ int main(){
 
 	clear(buffer, 8192);
 	buffer[0] = parent;
-	err = 16;
+	err = 1;
 	lib_writeFile(buffer, "tempc", &err, 0xFF);
 
 	exec("/bin/shell", 0xFF, &err);
@@ -41,6 +41,7 @@ void ln(char* args, char parentIndex)
 		clear(dir, 128);
 		while(*(args + errno) != ' ' && *(args + errno) != 0) errno++;
 		strncpy(dir, args, errno);
+		dir[errno+1] = 0;
 		if(strncmp(dir, "-s", 2) == 0) isSoft = 1;
 		else if(strlen(inputPath) == 0) strncpy(inputPath, dir, 128);
 		else if(strlen(outputPath) == 0) strncpy(outputPath, dir, 128);

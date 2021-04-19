@@ -7,20 +7,30 @@
 #include "io.h"
 
 
-void executeProgram();
-
+void drawLogo();
 int main ()
 {
-	char buffer[bufsize];
-	char sectorBuf[512]; // 1 sektor = 512 byte
-	int x, y;
-	int width, height, startx, starty;
-	char logo[512<<4];
 	// set graphics mode
 	// http://www.oldlinux.org/Linux.old/docs/interrupts/int-html/rb-0069.htm
 	// 13h = VGA Graphics (320x200, 256 colors)
 	// render graphics
 	makeInterrupt21();
+
+	drawLogo();
+
+	printString("Press any key to continue...");
+	interrupt(0x16, 0, 0, 0, 0);
+	
+	// set mode text 
+	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
+	interrupt(0x21, 0xFF06, "/bin/shell", 0x2000, 0);
+	while(1);
+}
+
+void drawLogo(){
+	int x, y;
+	int width, height, startx, starty;
+	char logo[512<<4];
 	interrupt(0x21, 0xFF04, logo, "logo", &x);
 	width = logo[0];
 	height = logo[1]-1;
@@ -32,14 +42,6 @@ int main ()
 			putInMemory(VGA_MEMORY_BASE, (y+starty) * VGA_WIDTH + (x+startx), logo[(y*width)+x]);
 		}
 	}
-
-
-	printString("Press any key to continue...");
-	interrupt(0x16, 0, 0, 0, 0);
-	
-	// set mode text 
-	interrupt(0x10, 0x0003, 0x0000, 0x0000, 0x0000);
-	interrupt(0x21, 0xFF06, "/bin/shell", 0x3000, &x);
 }
 
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
@@ -67,8 +69,8 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 			writeFile(BX, CX, DX, AH);
 			break;
 		case 0x6:
-      		executeProgram(BX, CX, DX, AH);
-      		break;
+      executeProgram(BX, CX, DX, AH);
+      break;
 		default:
 			printString("invalid interrupt");
 	}
@@ -87,12 +89,12 @@ void executeProgram(char *filename, int segment, int *success, char parentIndex)
     // Buat buffer
     int isSuccess;
     char fileBuffer[512 * 16];
+		int i = 0;
     // Buka file dengan readFile
-    readFile(&fileBuffer, filename, &isSuccess, parentIndex);
+    readFile(fileBuffer, filename, &isSuccess, parentIndex);
     // If success, salin dengan putInMemory
     if (isSuccess == 1) {
         // launchProgram
-        int i = 0;
         for (i = 0; i < 512*16; i++) {
             putInMemory(segment, i, fileBuffer[i]);
         }

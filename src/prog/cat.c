@@ -16,7 +16,7 @@ int main()
 
 	clear(buffer);
 	buffer[0] = parent;
-	err = 16;
+	err = 1;
 	lib_writeFile(buffer, "tempc", &err, 0xFF);
 	
 	exec("/bin/shell", 0xFF, &err);

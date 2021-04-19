@@ -25,11 +25,11 @@ int main() {
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
     
     lib_readFile(fileBuf, "tempc", &errNo, 0xFF);
-    removeFEntry("tempc", 0xFF, &errNo);
     if(errNo == 1)
         path = fileBuf[0];
     else
         path = 0xFF;
+    removeFEntry("tempc", 0xFF, &errNo);
     arrowClick = 0;
     historyIdx = -1;
     printPrompt(prompt, path);
@@ -82,7 +82,7 @@ int main() {
                 errNo++;
             }
             cmd[errNo] = 0;
-            command[0];
+            command[0] = path;
             if(strncmp(cmd, "") == 0) exec("/bin/shell", 0xFF, &errNo);
             // simpen history
             historyCount++;
@@ -111,6 +111,8 @@ int main() {
                     exec(cmd, getParent("bin", 0xFF), &errNo);
                 }
             }
+            print("File not found!");
+            exec("/bin/shell", 0xFF, &errNo);
         }
     }
     return;

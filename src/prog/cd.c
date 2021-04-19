@@ -19,7 +19,7 @@ int main()
 
 	clear(fileBuf, 8192);
 	fileBuf[0] = parent;
-	errNo = 16;
+	errNo = 1;
 	lib_writeFile(fileBuf, "tempc", &errNo, 0xFF);
 
 	exec("/bin/shell", 0xFF, &errNo);
