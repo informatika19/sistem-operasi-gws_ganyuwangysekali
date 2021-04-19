@@ -1,3 +1,27 @@
+#include "string.h"
+#include "fileio.h"
+#include "basicio.h"
+
+void ln(char* args, char parentIndex);
+
+int main(){
+	char buffer[512 << 4];
+	char parent, arg[512];
+	int err;
+	lib_readFile(buffer, "tempc", &err, 0xFF);
+	removeFEntry("tempc", 0xFF, &err);
+	parse(buffer, &parent, arg);
+
+	ln(arg, parent);
+
+	clear(buffer, 8192);
+	buffer[0] = parent;
+	err = 16;
+	lib_writeFile(buffer, "tempc", &err, 0xFF);
+
+	exec("/bin/shell", 0xFF, &err);
+}
+
 void ln(char* args, char parentIndex)
 {
 	int errno;
@@ -93,7 +117,4 @@ void ln(char* args, char parentIndex)
 	lib_writeSector(dir, 0x101);
 	lib_writeSector(dir + 512, 0x102);
 	return;
-}
-
-int main(){
 }

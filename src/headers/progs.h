@@ -4,7 +4,7 @@
 void cat(char *inputPath, char parentIndex);
 
 // cd [path]
-char chdir(char* inputPath, int* result, char parentIndex); 
+char chdir(char* inputPath, char parentIndex); 
 
 // ls [path]
 void ls(char* argv, char parentIndex);

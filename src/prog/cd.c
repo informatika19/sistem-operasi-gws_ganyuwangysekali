@@ -1,10 +1,36 @@
-char chdir(char* inputPath, int* result, char parentIndex)
+#include "basicio.h"
+#include "buffer.h"
+#include "fileio.h"
+
+char chdir(char* inputPath, char parentIndex);
+
+int main()
+{
+	char fileBuf[8192], arg[512];
+	int errNo = 0;
+	char parent;
+	clear(fileBuf, 8192);
+
+	lib_readFile(fileBuf, "tempc", &errNo, 0xFF);
+	removeFEntry("tempc", 0xFF, &errNo);
+	parse(fileBuf, &parent, arg);
+
+	parent = chdir(arg, parent);
+
+	clear(fileBuf, 8192);
+	fileBuf[0] = parent;
+	errNo = 16;
+	lib_writeFile(fileBuf, "tempc", &errNo, 0xFF);
+
+	exec("/bin/shell", 0xFF, &errNo);
+}
+
+char chdir(char* inputPath, char parentIndex)
 {
 	char pathIndex, dir[1024];
 	while(*inputPath == ' ') inputPath++;
 	if(*inputPath == 0)
 	{
-		*result = 0;
 		return 0xFF;
 	}
 	
@@ -12,12 +38,11 @@ char chdir(char* inputPath, int* result, char parentIndex)
 
 	if(pathIndex == 0xFE)
 	{
-		*result = -2;
+		print("No such file or directory\n");
 		return parentIndex;
 	}
 
 	if(pathIndex == 0xFF){
-		*result = 0;
 		return 0xFF;
 	}
 	
@@ -30,26 +55,8 @@ char chdir(char* inputPath, int* result, char parentIndex)
 	// sectornya itu sector file
 	if ((dir[(pathIndex << 4) + 1] <= 0x1F) && (dir[(pathIndex << 4) + 1] >= 0x00))
 	{
-		*result = -1;
+		print("Not a directory\n");
 		return parentIndex;
 	}
-	*result = 0;
 	return pathIndex;
-}
-
-int main()
-{
-	int errno = 0;
-	char cwd;
-	// cwd = chdir(argc, argv, &errno, cwd);
-	
-	if(errno == -1)
-	{
-		print("Not a directory");
-	}
-	else if(errno == -2)
-	{
-		print("No such file or directory");
-	}
-	return errno;
 }

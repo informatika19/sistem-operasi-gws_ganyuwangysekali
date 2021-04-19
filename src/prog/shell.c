@@ -23,9 +23,9 @@ int main() {
         historyCount = 0;
     }
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
-    removeFEntry("/tempc", 0xFF, &errNo);
     
-    lib_readFile(fileBuf, "shellcwd", &errNo, 0xFF);
+    lib_readFile(fileBuf, "tempc", &errNo, 0xFF);
+    removeFEntry("tempc", 0xFF, &errNo);
     if(errNo == 1)
         path = fileBuf[0];
     else
