@@ -7,6 +7,7 @@
 global _putInMemory
 global _interrupt
 global _makeInterrupt21
+global _printBackspace
 global _launchProgram
 extern _handleInterrupt21
 
@@ -97,3 +98,27 @@ _launchProgram:
     mov bp,0xfff0
 
 jump:    jmp 0x0000:0x0000
+
+_printBackspace:
+	mov ah,0x03
+	xor bh, bh
+	int 0x10
+	sub dl,1
+	jge .kosongkan
+	mov dl,80
+	sub dh,1
+	jge .kosongkan
+	add dh,1
+	push dx
+	mov ax,0x0601
+	int 0x10
+	pop dx
+	.kosongkan:
+	mov ax,0x0200
+	xor bh, bh
+	int 0x10
+	mov ax, 0x0A20
+	xor bh, bh
+	mov cx,1
+	int 0x10
+	ret
