@@ -11,14 +11,13 @@ int main()
 	lib_readFile(buffer, "tempc", &err, 0xFF);
 	removeFEntry("tempc", 0xFF, &err);
 	parse(buffer, &parent, arg);
-	parent = 0xFF;
 	ls(arg, parent);
 	exec("/bin/shell", 0xFF, &err);
 }
 
 void parse(char* cmd, char* parent, char* arg){
 	*parent = *cmd;
-	// cmd++;
+	cmd++;
 	while(*cmd == ' ') cmd++; // ignore leading spaces
 	while(*cmd != ' ' && *cmd != 0) cmd++; // ignore arg[0]
 	while(*cmd == ' ') cmd++; // ignore space between arg[0] and arg[1]

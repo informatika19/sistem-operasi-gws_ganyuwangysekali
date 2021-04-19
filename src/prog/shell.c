@@ -97,8 +97,7 @@ int main() {
                     fileBuf[(i*512)+errNo] = commandHistory[i][errNo];
                 }
             }
-            *(fileBuf+0xFF+0xFF+0xFF+0xFF) = (historyCount&0xFF);
-            printInt(fileBuf[2048]);
+            *(fileBuf+2048) = (historyCount&0xFF);
             removeFEntry("history", 0xFF, &errNo);
             errNo = 5;
             lib_writeFile(fileBuf, "history", &errNo, 0xFF);
@@ -114,7 +113,7 @@ int main() {
             }
         }
     }
-    exec("/bin/shell", 0xFF, &errNo);
+    return;
 }
 
 void printPath(char path, unsigned char trunc) {
