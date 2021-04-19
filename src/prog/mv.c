@@ -41,6 +41,9 @@ int main(){
       print("destination folder not found");
     }
     else{
+      if(fromParent == toParent){
+        toParent = dir[fromParent<<4];
+      }
       lib_readSector(dir, 0x101);
       lib_readSector(dir+512, 0x102);
       dir[fromParent<<4] = toParent;
