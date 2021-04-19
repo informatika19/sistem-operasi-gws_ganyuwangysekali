@@ -143,8 +143,8 @@ void lib_getFileName(char* name, char* out)
   if(*temp == '/') temp++;
   while (*temp != 0)
   {
-    *out = temp;
-    name++;
+    *out = *temp;
+    temp++;
     out++;
   }
   *out = 0;
@@ -155,12 +155,13 @@ void lib_getFileName(char* name, char* out)
 void createFolder(char* name, char parent, int* err)
 {
   char files[1024];
-  char* absolutePath, fileName;
+  char absolutePath[512], fileName[512];
   int i;
 
   lib_getAbsolutePath(name, absolutePath);
   lib_getFileName(name, fileName);
-  parent = getParent(absolutePath, parent);
+  if(strncmp(absolutePath, fileName, 512) != 0)
+    parent = getParent(absolutePath, parent);
 
   if(parent == 0xFE) // foldernya gak ketemu
   {
@@ -205,7 +206,7 @@ void createFolder(char* name, char parent, int* err)
     }
 
     // mau buat folder di dalam file
-    if(files[(parent << 4) + 1] != 0xFF)
+    if(parent != 0xFF && files[(parent << 4) + 1] != 0xFF)
     {
       *err = -5;
       return;
@@ -217,6 +218,7 @@ void createFolder(char* name, char parent, int* err)
 
     lib_writeSector(files, 0x101);
     lib_writeSector(files + 512, 0x102);
+    *err = 1;
   }
 }
 
