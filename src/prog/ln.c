@@ -26,7 +26,7 @@ void ln(char* args, char parentIndex)
 {
 	int errno;
 	char content[8192], dir[1024], inputFileIdx, inputPath[128], outputPath[128], outputFilename[14], outputBasepath[512], outputParentIndex;
-	unsigned char valid = 0, isSoft = 0;
+	unsigned char isSoft = 0;
 
 	clear(inputPath, 128);
 	clear(outputPath, 128);
@@ -41,7 +41,6 @@ void ln(char* args, char parentIndex)
 		clear(dir, 128);
 		while(*(args + errno) != ' ' && *(args + errno) != 0) errno++;
 		strncpy(dir, args, errno);
-		dir[errno+1] = 0;
 		if(strncmp(dir, "-s", 2) == 0) isSoft = 1;
 		else if(strlen(inputPath) == 0) strncpy(inputPath, dir, 128);
 		else if(strlen(outputPath) == 0) strncpy(outputPath, dir, 128);
@@ -50,10 +49,10 @@ void ln(char* args, char parentIndex)
 			errno = -1;
 			break;
 		}
-		valid++;
-		args += errno+1;
+		args += errno;
 	}
-	if((valid > 3) || (errno == -1) || (valid < 2))
+
+	if(strlen(inputPath) == 0 || strlen(outputPath) == 0)
 	{
 		print("Usage: ln [-s] <input> <output>\n");
 		return;
