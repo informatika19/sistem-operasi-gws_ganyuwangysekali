@@ -69,8 +69,8 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 			writeFile(BX, CX, DX, AH);
 			break;
 		case 0x6:
-      executeProgram(BX, CX, DX, AH);
-      break;
+      		executeProgram(BX, CX, DX, AH);
+      		break;
 		default:
 			printString("invalid interrupt");
 	}
