@@ -25,7 +25,7 @@ int main() {
     strcpy(prompt, "GanyuWangySekali:\\w$ ");
     
     lib_readFile(fileBuf, "tempc", &errNo, 0xFF);
-    if(errNo == 1)
+    if(errNo > 0)
         path = fileBuf[0];
     else
         path = 0xFF;

@@ -53,7 +53,6 @@ void remove(char* args, int* errno, char parentIndex)
 		valid++; // banyaknya command yang sah
 		args += (*errno);
 	}
-
     // tidak support menghapus banyak file
     if((*errno == 0) || (valid < 1) || (valid > 2))
     {

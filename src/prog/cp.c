@@ -1,5 +1,6 @@
 #include "string.h"
 #include "fileio.h"
+#include "buffer.h"
 
 void copy(char* args, char parentIndex);
 
@@ -59,6 +60,7 @@ void copy(char* args, char parentIndex)
 	}
 
 	/* Mengolah path input */
+	clear(content, 8192);
 	lib_readFile(content, inputPath, &len, parentIndex);
 	if(len == -1) // file tidak ditemukan
 	{
@@ -71,10 +73,10 @@ void copy(char* args, char parentIndex)
 		return;
 	}
 	
-    // yang kebaca pasti file
-    if(!isRecursive)
-    {
-        lib_writeFile(content, outputPath, &len, parentIndex);
+	// yang kebaca pasti file
+	if(!isRecursive)
+	{
+		lib_writeFile(content, outputPath, &len, parentIndex);
 		if(len == -1)
 		{
 			print("File exists\n");
@@ -83,11 +85,11 @@ void copy(char* args, char parentIndex)
 		{
 			print("Not enough space!\n");
 		}
-		else
+		else if(len < 0)
 		{
 			print("No such file or directory!\n");
 		}
-    }
+	}
 	else
 	{
 		print("cp -r not implemented\n");
