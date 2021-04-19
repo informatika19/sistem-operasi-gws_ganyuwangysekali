@@ -49,10 +49,10 @@ void copy(char* args, char parentIndex)
 			len = -1;
 			break;
 		}
-		valid++;
-		args += len + 1;
+		args += len;
 	}
-	if((valid > 3) || (len == -1) || (valid < 2))
+
+	if(strlen(inputPath) == 0 || strlen(outputPath) == 0)
 	{
 		print("Usage: cp [-r] <input> <output>\n");
 		return;
