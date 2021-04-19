@@ -26,18 +26,19 @@ int main()
 
 void remove(char* args, int* errno, char parentIndex)
 {
-    char files[1024], map[512], sectors[512], path[128];
-    char commands[128];
+    char files[1024], map[512], sectors[512], path[512];
+    char commands[512];
     int i, j;
     unsigned char isRecursive = 0, valid = 0;
     char idx, S;
 
-    clear(path, 128);
+    clear(path, 512);
     while(*args == ' ') args++;
 	valid = 0;
 	while(*args != 0){
+        while(*args == ' ') args++;
 		*errno = 0;
-		clear(commands, 128);
+		clear(commands, 512);
 
         // cari panjang "sebuah" argv (dalam konteks argc argv)
 		while(*(args + (*errno)) != ' ' && *(args + (*errno)) != 0) (*errno)++;
@@ -50,7 +51,7 @@ void remove(char* args, int* errno, char parentIndex)
 			break;
 		}
 		valid++; // banyaknya command yang sah
-		args += (*errno) + 1;
+		args += (*errno);
 	}
 
     // tidak support menghapus banyak file
