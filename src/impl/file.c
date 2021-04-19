@@ -90,15 +90,17 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	writeSector(dir + 0x100, 0x102);
 	j = 0;
 	i = 0;
+	print(filename);
+	printInt(*sectors);
 	while(*sectors > 0)
 	{
 		if(map[j] != 0xFF)
 		{
-			writeSector(buffer + (i << 8), j);
+			writeSector(buffer + (i*512), j);
 			sect[(k << 4) + i] = j;
 			map[j] = 0xFF;
 			i++;
-			*sectors--;
+			*(sectors)--;
 		}
 		j++;
 	}
@@ -143,10 +145,10 @@ void readFile(char *buffer, char *path, int *result, char parentIndex)
 		}
 		else {
 			readSector(buffer + (512 * i), sect[j]);
+			i++;
 		}
-		i++;
 	}
-	*result = 1;
+	*result = i;
 }
 
 char getPathIndex(char* path, char parentIndex)
