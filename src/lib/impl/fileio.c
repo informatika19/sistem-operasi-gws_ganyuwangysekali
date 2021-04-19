@@ -22,7 +22,7 @@ void lib_writeSector(char *buffer, int sector)
 
 void exec(char* name, char parent, int* err)
 {
-  interrupt(0x21, (parent << 8) | 0x06, name, 0x3000, err);
+  interrupt(0x21, (parent << 8) | 0x06, name, 0x2000, err);
 }
 
 char getParent(char* name, char parent)
@@ -225,17 +225,17 @@ void createFile(char* name, char parent, int* err)
   lib_writeFile("", name, err, parent);
 }
 
-void removeIndex(char index, int* errno, char** files, char** sectors, char** maps)
+void removeIndex(char index, int* errno, char* files, char* sectors, char* maps)
 {
   int i;
-  char S = (*files)[(index << 4) + 1];
+  char S = files[(index << 4) + 1];
   unsigned char hasHardLinked = 0;
 
   if(S >= 0x20) // kasus softlink
   {
     for(i = 0; i < 16; i++)
     {
-      (*files)[(index << 4) + i] = 0x00;
+      (files)[(index << 4) + i] = 0x00;
     }
     *errno = 1;
     return;
@@ -249,21 +249,21 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
     for(i = 0; i < 0x40; i++)
     {
       if(i == index) continue;
-      if((*files)[(i << 4) + 1] == S) hasHardLinked = 1;
+      if((files)[(i << 4) + 1] == S) hasHardLinked = 1;
     }
 
     *errno = 1;
     for(i = 0; i < 16; i++)
     {
-      (*files)[(index << 4) + i] = 0x00;
+      (files)[(index << 4) + i] = 0x00;
     }
 
     if(hasHardLinked) return;
       
     for(i = 0; i < 16; i++)
     {
-      (*maps)[(S << 4) + i] = 0x00;
-      (*sectors)[(S << 4) + i] = 0x00;
+      (maps)[(S << 4) + i] = 0x00;
+      (sectors)[(S << 4) + i] = 0x00;
     }
     return;
   }
@@ -271,7 +271,7 @@ void removeIndex(char index, int* errno, char** files, char** sectors, char** ma
   // sebuah folder (hapus semua anaknya secara rekursif)
   for(i = 0; i < 0x40; i++)
   {
-    if((*files)[i << 4] == index)
+    if((files)[i << 4] == index)
     {
       removeIndex(i, errno, files, sectors, maps);
     }
@@ -290,5 +290,4 @@ void removeFEntry(char* name, char parent, int* err){
   lib_writeSector(files, 0x101);
   lib_writeSector(files+512, 0x102);
   lib_writeSector(sectors, 0x103);
-  printInt(*err);
 }
