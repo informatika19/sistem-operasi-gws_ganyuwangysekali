@@ -28,7 +28,7 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 
 	valid = realParentIndex == 0xFF;
 	while(i < 0x40 && (dir[(i<<4) + 1] == 0xFF || dir[(i << 4) + 1] < 0x20)){
-		if(dir[i << 4] == realParentIndex && strncmp(dir+(i<<4)+2, filename, 14) != 0){
+		if(dir[i << 4] == realParentIndex && strncmp(dir+(i<<4)+2, filename, 14) == 0){
 			// file sudah ada :D
 			*sectors = -1;
 			return;
