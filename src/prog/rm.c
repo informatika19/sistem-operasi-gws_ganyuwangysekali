@@ -67,6 +67,11 @@ void remove(char* args, int* errno, char parentIndex)
     lib_readSector(sectors, 0x103);
 
     idx = getParent(path, parentIndex);
+    if(idx == 0xFE)
+    {
+        print("No such file or directory!\n");
+        return;
+    }
     if(isRecursive) // valid == 2
     {
         removeIndex(idx, errno, &files, &sectors, &map);
