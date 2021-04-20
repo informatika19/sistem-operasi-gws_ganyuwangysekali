@@ -9,13 +9,25 @@ int main(){
   argsP = &args;
   while(*argsP == ' ' && *argsP != 0) argsP++;
   if(*argsP == 0){
-    print("Usage: mkdir <name>");
+    print("Usage: mkdir <name>\n");
   }
   else{
     createFolder(argsP, parent, &err);
-    if(err < 0){
-      printInt(err);
-      print("Error!");
+    if(err == -1)
+    {
+      print("File or directory exists!\n");
+    }
+    else if(err == -2)
+    {
+      print("Empty your storage!\n");
+    }
+    else if(err == -4)
+    {
+      print("No such directory!\n");
+    }
+    else if(err == -5)
+    {
+      print("You can't make a directory inside a file!\n");
     }
   }
   exec("/bin/shell", 0xFF, &err);

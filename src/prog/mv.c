@@ -27,7 +27,7 @@ int main(){
   }
   *toP = 0;
   if(strlen(from) == 0 || strlen(to) == 0){
-    print("Usage: mv <src> <dest>");
+    print("Usage: mv <src> <dest>\n");
   }
   else{
     lib_getFileName(to, newName);
@@ -35,10 +35,10 @@ int main(){
     fromParent = getParent(from, parent);
     toParent = getParent(to, parent);
     if(fromParent == 0xFE){
-      print("source not found!");
+      print("source not found!\n");
     }
     if(toParent == 0xFE){
-      print("destination folder not found");
+      print("destination folder not found\n");
     }
     else{
       if(fromParent == toParent){
