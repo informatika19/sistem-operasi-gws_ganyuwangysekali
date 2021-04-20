@@ -10,6 +10,7 @@ int main() {
     char prompt[100];
     int errNo, historyCount, historyIdx, i;
 
+    clear(prompt, 100);
     lib_readFile(fileBuf, "history", &errNo, 0xFF);
     if(errNo > 0){
         historyCount = (int)fileBuf[2048];
@@ -111,7 +112,7 @@ int main() {
                     exec(cmd, getParent("bin", 0xFF), &errNo);
                 }
             }
-            print("File not found!");
+            print("Invalid command!\n");
             exec("/bin/shell", 0xFF, &errNo);
         }
     }
