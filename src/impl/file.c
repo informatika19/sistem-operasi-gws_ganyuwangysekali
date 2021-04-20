@@ -90,8 +90,8 @@ void writeFile(char *buffer, char *path, int *sectors, char parentIndex)
 	writeSector(dir + 0x100, 0x102);
 	j = 0;
 	i = 0;
-	print(filename);
-	printInt(*sectors);
+	// print(filename);
+	// printInt(*sectors);
 	while(*sectors > 0)
 	{
 		if(map[j] != 0xFF)
